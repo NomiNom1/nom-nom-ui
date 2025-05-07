@@ -1,9 +1,14 @@
 import SwiftUI
 import AppTrackingTransparency
+import AuthenticationServices
 
 struct SignInView: View {
     @State private var email = ""
+    @State private var password = ""
+    @State private var showError = false
+    @State private var errorMessage = ""
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var authService = AuthenticationService.shared
     
     var body: some View {
         VStack(spacing: 24) {
@@ -15,11 +20,15 @@ struct SignInView: View {
             
             // Social Sign-in Buttons
             VStack(spacing: 12) {
-                SocialSignInButton(title: "Continue with Google", icon: "g.circle.fill")
-                SocialSignInButton(title: "Continue with Amazon", icon: "a.circle.fill")
-                SocialSignInButton(title: "Continue with Apple", icon: "apple.logo")
-                SocialSignInButton(title: "Continue with Facebook", icon: "f.circle.fill")
-                SocialSignInButton(title: "Continue with WeChat", icon: "w.circle.fill")
+                SocialSignInButton(
+                    title: "Continue with Google",
+                    icon: "g.circle.fill",
+                    action: { Task { await handleGoogleSignIn() }}
+                )
+                // SocialSignInButton(title: "Continue with Amazon", icon: "a.circle.fill")
+                // SocialSignInButton(title: "Continue with Apple", icon: "apple.logo")
+                // SocialSignInButton(title: "Continue with Facebook", icon: "f.circle.fill")
+                // SocialSignInButton(title: "Continue with WeChat", icon: "w.circle.fill")
             }
             .padding(.horizontal)
             
@@ -82,16 +91,25 @@ struct SignInView: View {
         //             ATTTrackingDialougue()
         //         }
     }
+
+    private func handleGoogleSignIn() async {
+        print("Sindie the ")
+        do {
+            try await authService.signInWithGoogle()
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+    }
 }
 
 struct SocialSignInButton: View {
     let title: String
     let icon: String
+    let action: () -> Void
     
     var body: some View {
-        Button(action: {
-            // Handle social sign-in
-        }) {
+        Button(action: action) {
             HStack {
                 Image(systemName: icon)
                     .font(.title3)

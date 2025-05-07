@@ -33,6 +33,7 @@ class AuthenticationService: ObservableObject {
     
     // MARK: - Google Sign In
     func signInWithGoogle() async throws {
+        print("This runs")
         isLoading = true
         defer { isLoading = false }
         

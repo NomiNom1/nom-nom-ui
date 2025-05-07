@@ -6,21 +6,18 @@
 	<string>This identifier will be used to deliver personalized ads to you.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
-		<!-- Google Sign In -->
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.YOUR-GOOGLE-CLIENT-ID</string>
 			</array>
 		</dict>
-		<!-- Facebook Sign In -->
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fbYOUR-FACEBOOK-APP-ID</string>
 			</array>
 		</dict>
-		<!-- WeChat Sign In -->
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
@@ -40,6 +37,6 @@
 	<key>FacebookDisplayName</key>
 	<string>NomiNom</string>
 	<key>GoogleClientID</key>
-	<string>YOUR-GOOGLE-CLIENT-ID</string>
+	<string>509146455459-mkahb7vi14nu15vpn67mra463ga0ln3n.apps.googleusercontent.com</string>
 </dict>
 </plist>
