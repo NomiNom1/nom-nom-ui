@@ -9,7 +9,6 @@ struct LandingPage: View {
                 // Background Color
                 AppColors.primary
                     .edgesIgnoringSafeArea(.all)
-
                 VStack {
                     // Logo
                     Image("logo") // Replace with your logo image name
@@ -17,7 +16,6 @@ struct LandingPage: View {
                         .scaledToFit()
                         .frame(width: 200, height: 100)
                         .padding(.top, 50)
-
                     Spacer()
                     
                     Button(action: {
@@ -32,7 +30,6 @@ struct LandingPage: View {
                             .cornerRadius(50)
                     }
                     .padding(.bottom, 10)
-
                     Button(action: {
                         showSignIn = true
                     }) {
