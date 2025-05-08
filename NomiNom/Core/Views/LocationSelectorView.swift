@@ -47,6 +47,61 @@ struct LocationSelectorView: View {
                 .padding(.horizontal)
                 .padding(.top, 16)
                 
+                // Horizontal scroll view for Home and Work tiles
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        // Home Tile
+                        VStack() {
+                            HStack(spacing: 4) {
+                                Image(systemName: "house.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.blue)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Home")
+                                        .font(.headline)
+                                    Text("Set Address")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            .padding()
+                        }
+                        .frame(width: 200)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        
+                        // Divider
+                        Rectangle()
+                            .fill(Color(.systemGray4))
+                            .frame(width: 1, height: 50)
+                            .padding(.horizontal, 8)
+                        
+                        // Work Tile
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "briefcase.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.blue)
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("Work")
+                                        .font(.headline)
+                                    Text("Set Address")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                            }
+                            .padding()
+                        }
+                        .frame(width: 200)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.top, 16)
+                
                 // Current location button
                 Button(action: {
                     locationManager.requestLocationPermission()
