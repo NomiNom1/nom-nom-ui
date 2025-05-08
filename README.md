@@ -102,12 +102,23 @@ TBD
 
 
 
-## Roadmap
+## Roadmap / Features
 
 See the [open issues](https://github.com/NomiNom1/nom-nom-ui/issues) for a full list of proposed features (and known issues).
 
 * [ ] Implement screenshots through UI test
-* [ ] add IdPs for Google / Facebook / Apple, WeChat
+* [ ] User friendly registration add IdPs for Google / Facebook / Apple, WeChat
+* [ ] Menu performance with intuitive knowledge
+* [ ] Reward / Discount Program, Cashback & Loyalty Program
+* [ ] Food delivery GPS tracing in real time
+* [ ] Order history and favorites
+* [ ] User account management
+* [ ] Rating and review
+* [ ] Search filter
+* [ ] In-App Assistance
+* [ ] Restaurante Details
+* [ ] Safe payment option
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
