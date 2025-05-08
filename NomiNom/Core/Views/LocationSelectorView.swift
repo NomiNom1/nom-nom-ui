@@ -49,15 +49,15 @@ struct LocationSelectorView: View {
                 
                 // Horizontal scroll view for Home and Work tiles
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 0) {
+                    HStack(spacing: 16) {
                         // Home Tile
-                        VStack() {
-                            HStack(spacing: 4) {
+                        VStack(alignment: .leading) {
+                            HStack(spacing: 8) {
                                 Image(systemName: "house.fill")
-                                    .font(.system(size: 24))
+                                    .font(.system(size: 20))
                                     .foregroundColor(.blue)
                                 
-                                VStack(alignment: .leading, spacing: 4) {
+                                VStack(alignment: .leading, spacing: 2) {
                                     Text("Home")
                                         .font(.headline)
                                     Text("Set Address")
@@ -65,11 +65,11 @@ struct LocationSelectorView: View {
                                         .foregroundColor(.gray)
                                 }
                             }
-                            .padding()
+                            .padding(.top, 4)
+                            .padding(.bottom, 4)
+                            .padding(.trailing, 0)
                         }
-                        .frame(width: 200)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        .frame(width: 150)
                         
                         // Divider
                         Rectangle()
@@ -78,13 +78,13 @@ struct LocationSelectorView: View {
                             .padding(.horizontal, 8)
                         
                         // Work Tile
-                        VStack(alignment: .leading, spacing: 8) {
-                            HStack(spacing: 12) {
+                        VStack(alignment: .leading) {
+                            HStack(spacing: 8) {
                                 Image(systemName: "briefcase.fill")
-                                    .font(.system(size: 24))
+                                    .font(.system(size: 20))
                                     .foregroundColor(.blue)
                                 
-                                VStack(alignment: .leading, spacing: 4) {
+                                VStack(alignment: .leading, spacing: 2) {
                                     Text("Work")
                                         .font(.headline)
                                     Text("Set Address")
@@ -92,11 +92,11 @@ struct LocationSelectorView: View {
                                         .foregroundColor(.gray)
                                 }
                             }
-                            .padding()
+                            .padding(.top, 4)
+                            .padding(.bottom, 4)
+                            .padding(.trailing, 12)
                         }
-                        .frame(width: 200)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(12)
+                        .frame(width: 180)
                     }
                     .padding(.horizontal)
                 }
@@ -143,4 +143,4 @@ struct LocationSelectorView: View {
 
 #Preview {
     LocationSelectorView()
-} 
+}
