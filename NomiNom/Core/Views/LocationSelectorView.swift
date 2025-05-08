@@ -9,7 +9,31 @@ struct LocationSelectorView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-
+                // Header with X and Address
+                HStack {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundColor(.primary)
+                    }
+                    
+                    Spacer()
+                    
+                    Text("Address")
+                        .font(.headline)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 32)
+                
+                // Divider
+                Rectangle()
+                    .fill(Color(.systemGray5))
+                    .frame(height: 1)
+                    .padding(.top, 8)
                 
                 // Search bar
                 HStack {
@@ -19,8 +43,9 @@ struct LocationSelectorView: View {
                 }
                 .padding()
                 .background(Color(.systemGray6))
-                .cornerRadius(10)
+                .cornerRadius(50)
                 .padding(.horizontal)
+                .padding(.top, 16)
                 
                 // Current location button
                 Button(action: {
@@ -53,14 +78,7 @@ struct LocationSelectorView: View {
                 
                 Spacer()
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
+            .navigationBarHidden(true)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
