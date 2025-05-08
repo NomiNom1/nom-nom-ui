@@ -89,7 +89,7 @@ struct SignInView: View {
                     }
                 }
             }
-            .navigationDestination(isPresented: $navigateToMain) {
+            .fullScreenCover(isPresented: $navigateToMain) {
                 MainTabView()
             }
         }
