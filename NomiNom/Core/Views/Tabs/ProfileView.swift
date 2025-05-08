@@ -9,18 +9,19 @@ struct ProfileView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                VStack(spacing: 16) {
+                VStack(spacing: 8) {
                     // Top Bar with Profile Picture and Icons
                     HStack {
                         Spacer()
+                        
                         profileImage
                             .resizable()
                             .scaledToFill()
                             .frame(width: 40, height: 40)
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                        
                         Spacer()
+                        
                         
                         HStack(spacing: 20) {
                             Button(action: { /* Handle notifications */ }) {
@@ -35,11 +36,12 @@ struct ProfileView: View {
                                     .foregroundColor(.primary)
                             }
                         }
+                        .padding(.trailing)
                     }
                     .padding(.horizontal)
                     
                     // User Info Section
-                    VStack(spacing: 8) {
+                    VStack(spacing: 4) {
                         Text("John Doe") // Replace with actual user name
                             .font(.title2)
                             .fontWeight(.bold)
