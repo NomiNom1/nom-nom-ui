@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>This identifier will be used to deliver personalized ads to you.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -25,11 +23,6 @@
 			</array>
 		</dict>
 	</array>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>weixin</string>
-		<string>weixinULAPI</string>
-	</array>
 	<key>FacebookAppID</key>
 	<string>YOUR-FACEBOOK-APP-ID</string>
 	<key>FacebookClientToken</key>
@@ -38,5 +31,10 @@
 	<string>NomiNom</string>
 	<key>GoogleClientID</key>
 	<string>509146455459-mkahb7vi14nu15vpn67mra463ga0ln3n.apps.googleusercontent.com</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>weixin</string>
+		<string>weixinULAPI</string>
+	</array>
 </dict>
 </plist>
