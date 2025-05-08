@@ -1,8 +1,10 @@
 import SwiftUI
+import CoreLocation
 
 struct LocationSelectorView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var address: String = "123 Main Street, City, State"
+    @StateObject private var locationManager = LocationManager()
+    @State private var searchText = ""
     
     var body: some View {
         NavigationView {
@@ -14,19 +16,47 @@ struct LocationSelectorView: View {
                     .padding(.top, 8)
                     .padding(.bottom, 16)
                 
-                // Address content
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Address")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding(.horizontal)
-                    
-                    Text(address)
-                        .font(.body)
-                        .padding(.horizontal)
-                    
-                    Spacer()
+                // Search bar
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField("Search for a location", text: $searchText)
                 }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+                .padding(.horizontal)
+                
+                // Current location button
+                Button(action: {
+                    locationManager.requestLocationPermission()
+                }) {
+                    HStack {
+                        Image(systemName: "location.fill")
+                            .foregroundColor(.blue)
+                        Text("Use current location")
+                            .foregroundColor(.primary)
+                        Spacer()
+                    }
+                    .padding()
+                }
+                
+                // Current address if available
+                if !locationManager.address.isEmpty {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Current Location")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .padding(.horizontal)
+                        
+                        Text(locationManager.address)
+                            .font(.body)
+                            .padding(.horizontal)
+                    }
+                    .padding(.top)
+                }
+                
+                Spacer()
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

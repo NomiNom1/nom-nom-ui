@@ -36,5 +36,9 @@
 		<string>weixin</string>
 		<string>weixinULAPI</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to show you nearby restaurants and delivery options.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to show you nearby restaurants and delivery options, even when the app is in the background.</string>
 </dict>
 </plist>

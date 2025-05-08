@@ -2,7 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var showLocationSelector = false
-    @State private var currentAddress = "123 Main Street, City, State"
+    @StateObject private var locationManager = LocationManager()
     
     var body: some View {
         NavigationView {
@@ -15,7 +15,7 @@ struct HomeView: View {
                         Image(systemName: "location.fill")
                             .foregroundColor(.blue)
                         
-                        Text(currentAddress)
+                        Text(locationManager.address.isEmpty ? "Select location" : locationManager.address)
                             .foregroundColor(.primary)
                             .lineLimit(1)
                         
