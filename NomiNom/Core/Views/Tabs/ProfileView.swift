@@ -52,7 +52,7 @@ struct ProfileView: View {
                     
                     // Horizontal Scrolling Buttons
                     ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 20) {
+                        HStack(spacing: 8) {
                             ProfileButton(icon: "list.bullet", title: "Orders")
                             ProfileButton(icon: "gearshape.fill", title: "Settings")
                             ProfileButton(icon: "person.fill", title: "Profile")
@@ -77,18 +77,21 @@ struct ProfileButton: View {
     
     var body: some View {
         Button(action: { /* Handle button tap */ }) {
-            VStack(spacing: 8) {
+            HStack(spacing: 16) {
                 Image(systemName: icon)
-                    .font(.system(size: 24))
+                    .font(.system(size: 20))
                     .foregroundColor(.primary)
+                    .frame(width: 24)
                 
                 Text(title)
-                    .font(.caption)
+                    .font(.body)
                     .foregroundColor(.primary)
             }
-            .frame(width: 80, height: 80)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(12)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .frame(maxWidth: .infinity)
+            .background(Color(.systemGray6))
+            .cornerRadius(50)
         }
     }
 }
