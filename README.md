@@ -106,6 +106,7 @@ TBD
 
 See the [open issues](https://github.com/NomiNom1/nom-nom-ui/issues) for a full list of proposed features (and known issues).
 
+Features for Users
 * [ ] Implement screenshots through UI test
 * [ ] User friendly registration add IdPs for Google / Facebook / Apple, WeChat
 * [ ] Menu performance with intuitive knowledge
@@ -119,6 +120,16 @@ See the [open issues](https://github.com/NomiNom1/nom-nom-ui/issues) for a full 
 * [ ] Restaurante Details
 * [ ] Safe payment option
 
+Features for Restuarant
+* Rest Mgr
+# order notificaiton & confirmation
+* Report and analytics
+* pricing and publicity
+
+Features for Delivery Partners
+* Accept / reject order
+* Rig adaptation
+* income and payment mangement
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
