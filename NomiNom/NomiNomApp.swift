@@ -13,7 +13,7 @@ struct NomiNomApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LandingPage()
                 .environmentObject(themeManager)
                 .withTheme()
         }
