@@ -16,99 +16,107 @@ struct SignInView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
-                // Header
-                Text("Sign in or create an account")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(themeManager.currentTheme.textPrimary)
-                    .padding(.top, 32)
+            ZStack {
+                // Full screen background
+                themeManager.currentTheme.background
+                    .ignoresSafeArea()
                 
-                // Social Sign-in Buttons
-                VStack(spacing: 12) {
-                    SocialSignInButton(
-                        title: "Continue with Google",
-                        icon: "g.circle.fill",
-                        action: { Task { await handleGoogleSignIn() }}
-                    )
-                    .environmentObject(themeManager)
-                    // SocialSignInButton(title: "Continue with Amazon", icon: "a.circle.fill")
-                    // SocialSignInButton(title: "Continue with Apple", icon: "apple.logo")
-                    // SocialSignInButton(title: "Continue with Facebook", icon: "f.circle.fill")
-                    // SocialSignInButton(title: "Continue with WeChat", icon: "w.circle.fill")
-                }
-                .padding(.horizontal)
-                
-                // Divider
-                HStack {
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
-                    Text("OR")
-                        .foregroundColor(themeManager.currentTheme.textTertiary)
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
-                }
-                .padding(.horizontal)
-                
-                // Email Section
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Or get started with email")
-                        .font(.headline)
-                         .foregroundColor(themeManager.currentTheme.textPrimary)
-                    
-                    Text("If you already have an account, use your Grubhub or Seamless email")
-                        .font(.subheadline)
-                        .foregroundColor(themeManager.currentTheme.textSecondary)
-                    
-                    TextField("Email", text: $email)
-                        .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                        .onChange(of :email) { newValue in
-                             isEmailValid = isValidEmail(newValue)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Header
+                        Text("Sign in or create an account")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(themeManager.currentTheme.textPrimary)
+                            .padding(.top, 16)
+                        
+                        // Social Sign-in Buttons
+                        VStack(spacing: 12) {
+                            SocialSignInButton(
+                                title: "Continue with Google",
+                                icon: "g.circle.fill",
+                                action: { Task { await handleGoogleSignIn() }}
+                            )
+                            .environmentObject(themeManager)
+                            // SocialSignInButton(title: "Continue with Amazon", icon: "a.circle.fill")
+                            // SocialSignInButton(title: "Continue with Apple", icon: "apple.logo")
+                            // SocialSignInButton(title: "Continue with Facebook", icon: "f.circle.fill")
+                            // SocialSignInButton(title: "Continue with WeChat", icon: "w.circle.fill")
                         }
-                        .padding(.top, 8)
+                        .padding(.horizontal)
+                        
+                        // Divider
+                        HStack {
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
+                            Text("OR")
+                                .foregroundColor(themeManager.currentTheme.textTertiary)
+                            Rectangle()
+                                .frame(height: 1)
+                                .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
+                        }
+                        .padding(.horizontal)
+                        
+                        // Email Section
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Or get started with email")
+                                .font(.headline)
+                                .foregroundColor(themeManager.currentTheme.textPrimary)
+                            
+                            Text("If you already have an account, use your Grubhub or Seamless email")
+                                .font(.subheadline)
+                                .foregroundColor(themeManager.currentTheme.textSecondary)
+                            
+                            TextField("Email", text: $email)
+                                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                                .textContentType(.emailAddress)
+                                .keyboardType(.emailAddress)
+                                .autocapitalization(.none)
+                                .onChange(of: email) { newValue in
+                                    isEmailValid = isValidEmail(newValue)
+                                }
+                                .padding(.top, 8)
 
-                    // Button(action: {
-                    //     navigateToMain = true
-                    //     // Task {
-                    //     //     await handleEmailSignIn()
-                    //     // }
-                    // }) {
-                    //     if isLoading {
-                    //         ProgressView()
-                    //             .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    //     } else {
-                    //         Text("Continue")
-                    //             .font(.headline)
-                    //     }
-                    // }
-                    // .padding()
-                    // .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
-                    // .foregroundColor(.white)
-                    // .cornerRadius(50)
-                    // .disabled(!isEmailValid || isLoading)
-                    // .padding(.top, 16)
-                    
-                    Button(action: {
-                        navigateToMain = true
-                    }) {
-                        Text("Continue")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(10)
+                            // Button(action: {
+                            //     navigateToMain = true
+                            //     // Task {
+                            //     //     await handleEmailSignIn()
+                            //     // }
+                            // }) {
+                            //     if isLoading {
+                            //         ProgressView()
+                            //             .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            //     } else {
+                            //         Text("Continue")
+                            //             .font(.headline)
+                            //     }
+                            // }
+                            // .padding()
+                            // .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
+                            // .foregroundColor(.white)
+                            // .cornerRadius(50)
+                            // .disabled(!isEmailValid || isLoading)
+                            // .padding(.top, 16)
+                            
+                            Button(action: {
+                                navigateToMain = true
+                            }) {
+                                Text("Continue")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(themeManager.currentTheme.buttonPrimary)
+                                    .cornerRadius(10)
+                            }
+                            .padding(.top, 16)
+                        }
+                        .padding(.horizontal)
                     }
-                    .padding(.top, 16)
+                    .padding(.bottom, 32)
                 }
-                .padding(.horizontal)
             }
-            .background(themeManager.currentTheme.background)
             .navigationBarBackButtonHidden(true)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
