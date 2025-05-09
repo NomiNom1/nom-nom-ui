@@ -227,3 +227,6 @@ LLM
 
 # prompts
 I am creating an app similar to Doordash, Uber Eats, and Grubhub. Follow google / meta best practices for highly scalabe app design the size of TikTok, Instagram, or WeChat.
+
+
+I am creating an app similar to Doordash, Uber Eats, and Grubhub. Follow google / meta best practices for highly scalabe app design the size of TikTok, Instagram, or WeChat. I want to enable the settings button. When the use clicks on the settings button. It should show a new screen with `Settings` At the top, and a profile button, that spans the width of the screen. Below, should be a list of other buttons as well that span the width of the screen. `Get $0 delivery feees with NomiNom`, `Payment` `Saved Stores` `My Rewards` `Get help` `Gift Card` `Refer Friends, Get $1`,. Below this should be another section that says `Account Settings` below is another set of buttons `Manage Account` Bussiness Profile` `Address` `Privacy` `Notifications` `Dark Mode` `Language Preference`. Each button should have a chevron right button on the right side of screen.
