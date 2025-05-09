@@ -31,13 +31,13 @@ struct SettingsView: View {
                         .padding(.top, 20)
                         .background(Color(.systemGray6))
                     }
-
+                    
                     // Section 1: General Settings
                     VStack(alignment: .leading, spacing: 10) {
                         Text("General")
                             .font(.title3)
                             .fontWeight(.semibold)
-
+                        
                         SettingsRow(title: "Get $0 delivery feees with NomiNom")
                         SettingsRow(title: "Payment")
                         SettingsRow(title: "Saved Stores")
@@ -47,19 +47,29 @@ struct SettingsView: View {
                         SettingsRow(title: "Refer Friends, Get $1")
                     }
                     .padding(.bottom)
-
+                    
                     // Section 2: Account Settings
                     VStack(alignment: .leading, spacing: 10) {
                         Text("Account Settings")
                             .font(.title3)
                             .fontWeight(.semibold)
-
+                        
                         SettingsRow(title: "Manage Account")
                         SettingsRow(title: "Business Profile")
                         SettingsRow(title: "Address")
                         SettingsRow(title: "Privacy")
                         SettingsRow(title: "Notifications")
-                        SettingsRow(title: "Dark Mode", isToggle: true) // Example with a toggle
+                        // Theme Button NavigationLink
+                        NavigationLink(destination: ThemeSelectionView()) {
+                            HStack {
+                                Text("Theme")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.vertical, 8)
+                        }
                         SettingsRow(title: "Language Preference")
                     }
                 }
@@ -73,7 +83,7 @@ struct SettingsView: View {
 struct SettingsRow: View {
     let title: String
     var isToggle: Bool = false // Added for potential toggle controls
-
+    
     var body: some View {
         HStack {
             Text(title)
