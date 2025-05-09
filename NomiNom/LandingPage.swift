@@ -2,12 +2,13 @@ import SwiftUI
 
 struct LandingPage: View {
     @State private var showSignIn = false
+    @EnvironmentObject var themeManager: ThemeManager
     
     var body: some View {
         NavigationStack {
             ZStack {
                 // Background Color
-                AppColors.primary
+                themeManager.currentTheme.background
                     .edgesIgnoringSafeArea(.all)
                 VStack {
                     // Logo
@@ -23,25 +24,26 @@ struct LandingPage: View {
                     }) {
                         Text("Search Nearby")
                             .font(.headline)
-                            .foregroundColor(.black)
+                            .foregroundColor(themeManager.currentTheme.textPrimary)
                             .frame(maxWidth: 200)
                             .padding()
-                            .background(AppColors.Button.secondary)
+                            .background(themeManager.currentTheme.buttonPrimary)
                             .cornerRadius(50)
                     }
                     .padding(.bottom, 10)
+                    
                     Button(action: {
                         showSignIn = true
                     }) {
                         Text("Sign In")
                             .font(.headline)
-                            .foregroundColor(AppColors.Button.secondary)
+                            .foregroundColor(themeManager.currentTheme.buttonPrimary)
                             .frame(maxWidth: 200)
                             .padding()
                             .background(Color.clear)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 50)
-                                    .stroke(AppColors.Button.secondary, lineWidth: 2)
+                                    .stroke(themeManager.currentTheme.buttonPrimary, lineWidth: 2)
                             )
                     }
                     .padding(.bottom, 20)
@@ -57,5 +59,6 @@ struct LandingPage: View {
 struct LandingPage_Previews: PreviewProvider {
     static var previews: some View {
         LandingPage()
+            .environmentObject(ThemeManager())
     }
 } 
