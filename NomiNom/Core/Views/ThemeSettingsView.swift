@@ -21,41 +21,13 @@ struct ThemeSelectionView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading) {
-                Text("Choose Theme")
+                Text("Dark Mode")
                     .font(.title2)
                     .fontWeight(.bold)
                     .padding(.bottom)
 
-//                VStack(alignment: .leading) {
-//                    ForEach(ThemeSetting.allCases) { theme in
-//                        HStack {
-//                            RadioButton(isSelected: selectedTheme == theme) {
-//                                selectedTheme = theme
-//                                UserDefaults.standard.set(theme.rawValue, forKey: "AppTheme")
-//                                themeManager.applyTheme(theme) // Apply the theme
-//                            }
-//                            Text(theme.rawValue)
-//                                .foregroundColor(.primary)
-//                        }
-//                        .padding(.bottom, 5) // Add some spacing between rows
-//                    }
-//                }
-
                 Spacer()
             }
-            .padding()
-            .navigationBarTitle("Theme", displayMode: .inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-//            .onAppear {
-//                // Ensure the theme is applied on initial load of this view
-//                themeManager.applyTheme(selectedTheme)
-//            }
         }
     }
 }
