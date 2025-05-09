@@ -35,6 +35,8 @@ struct MainTabView: View {
                 }
                 .tag(4)
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
