@@ -15,7 +15,7 @@ struct NomiNomApp: App {
         WindowGroup {
             LandingPage()
                 .environmentObject(themeManager)
-                .withTheme()
+//                .withTheme()
         }
     }
 }

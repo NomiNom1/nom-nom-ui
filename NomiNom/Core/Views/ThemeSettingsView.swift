@@ -23,98 +23,70 @@ struct ThemeSelectionView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Dark Mode")
+                    Text("Theme Settings")
                         .font(.largeTitle)
                         .fontWeight(.bold)
+                        .foregroundColor(themeManager.currentTheme.textPrimary)
                         .padding(.bottom)
                     
                     VStack(alignment: .leading, spacing: 10) {
+                        // Light Mode Option
                         HStack {
-                            
-                            
-                            RadioButton(isSelected: selectedTheme == ThemeSetting.on) {
-                                selectedTheme = ThemeSetting.on
+                            RadioButton(isSelected: selectedTheme == .off) {
+                                selectedTheme = .off
+                                updateTheme()
                             }
                             Text("Light")
-                                .foregroundColor(.primary)
+                                .foregroundColor(themeManager.currentTheme.textPrimary)
                             Spacer()
                         }
                         .padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedTheme = .off
+                            updateTheme()
+                        }
+                        
+                        // Dark Mode Option
                         HStack {
-                            
-                            
-                            RadioButton(isSelected: selectedTheme == ThemeSetting.off) {
-                                selectedTheme = ThemeSetting.off
+                            RadioButton(isSelected: selectedTheme == .on) {
+                                selectedTheme = .on
+                                updateTheme()
                             }
                             Text("Dark")
-                                .foregroundColor(.primary)
+                                .foregroundColor(themeManager.currentTheme.textPrimary)
                             Spacer()
                         }
                         .padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedTheme = .on
+                            updateTheme()
+                        }
+                        
+                        // System Settings Option
+                        HStack {
+                            RadioButton(isSelected: selectedTheme == .system) {
+                                selectedTheme = .system
+                                updateTheme()
+                            }
+                            Text("System Settings")
+                                .foregroundColor(themeManager.currentTheme.textPrimary)
+                            Spacer()
+                        }
+                        .padding(.vertical, 8)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedTheme = .system
+                            updateTheme()
+                        }
                     }
                     .padding(.bottom)
                 }
-                
-                // List {
-                //     Section {
-                //         // On Button
-                //         HStack {
-                //             RadioButton(isSelected: selectedTheme == .on) {
-                //                 selectedTheme = .on
-                //                 updateTheme()
-                //             }
-                
-                //             Text("On")
-                //                 .foregroundColor(.primary)
-                
-                //             Spacer()
-                //         }
-                //         .contentShape(Rectangle())
-                //         .onTapGesture {
-                //             selectedTheme = .on
-                //             updateTheme()
-                //         }
-                
-                //         // Off Button
-                //         HStack {
-                //             RadioButton(isSelected: selectedTheme == .off) {
-                //                 selectedTheme = .off
-                //                 updateTheme()
-                //             }
-                
-                //             Text("Off")
-                //                 .foregroundColor(.primary)
-                
-                //             Spacer()
-                //         }
-                //         .contentShape(Rectangle())
-                //         .onTapGesture {
-                //             selectedTheme = .off
-                //             updateTheme()
-                //         }
-                
-                //         // System Settings Button
-                //         HStack {
-                //             RadioButton(isSelected: selectedTheme == .system) {
-                //                 selectedTheme = .system
-                //                 updateTheme()
-                //             }
-                
-                //             Text("System Settings")
-                //                 .foregroundColor(.primary)
-                
-                //             Spacer()
-                //         }
-                //         .contentShape(Rectangle())
-                //         .onTapGesture {
-                //             selectedTheme = .system
-                //             updateTheme()
-                //         }
-                //     }
-                // }
-                // .navigationTitle("Dark Mode")
-                // .navigationBarTitleDisplayMode(.inline)
+                .padding()
             }
+            .background(themeManager.currentTheme.background)
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -133,17 +105,18 @@ struct ThemeSelectionView: View {
 }
 
 struct RadioButton: View {
+    @EnvironmentObject var themeManager: ThemeManager
     let isSelected: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             Circle()
-                .fill(isSelected ? Color.accentColor : Color.gray.opacity(0.3))
+                .fill(isSelected ? themeManager.currentTheme.primary : themeManager.currentTheme.surface)
                 .frame(width: 20, height: 20)
                 .overlay(
                     Circle()
-                        .stroke(Color.gray, lineWidth: 1)
+                        .stroke(themeManager.currentTheme.primary, lineWidth: 1)
                 )
         }
         .buttonStyle(PlainButtonStyle())
