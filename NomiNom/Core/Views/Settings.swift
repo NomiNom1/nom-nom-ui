@@ -27,9 +27,9 @@ struct SettingsView: View {
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
                         }
-                        .padding()
+                        .padding(.bottom, 20)
+                        .padding(.top, 20)
                         .background(Color(.systemGray6))
-                        .cornerRadius(10)
                     }
 
                     // Section 1: General Settings
@@ -75,20 +75,18 @@ struct SettingsRow: View {
     var isToggle: Bool = false // Added for potential toggle controls
 
     var body: some View {
-        NavigationLink(destination: /* Placeholder for specific setting view */ Text("\(title) Details")) {
-            HStack {
-                Text(title)
-                    .foregroundColor(.primary)
-                Spacer()
-                if isToggle {
-                    Toggle("", isOn: .constant(false)) // Replace with actual state
-                } else {
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.gray)
-                }
+        HStack {
+            Text(title)
+                .foregroundColor(.primary)
+            Spacer()
+            if isToggle {
+                Toggle("", isOn: .constant(false)) // Replace with actual state
+            } else {
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
             }
-            .padding(.vertical, 8)
         }
+        .padding(.vertical, 8)
     }
 }
 
