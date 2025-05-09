@@ -6,6 +6,7 @@ struct ThemeModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
+            .preferredColorScheme(themeManager.isDarkMode ? .dark : .light)
             .onChange(of: colorScheme) { newColorScheme in
                 themeManager.updateTheme(for: newColorScheme)
             }

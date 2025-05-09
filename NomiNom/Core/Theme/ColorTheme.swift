@@ -26,63 +26,84 @@ protocol ColorTheme {
     var statusPending: Color { get }
 }
 
+import SwiftUI
+
 // MARK: - Light Theme
 struct LightTheme: ColorTheme {
-    let primary = Color(red: 0.4627, green: 0.8392, blue: 1.0)      // Primary brand color
-    let secondary = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // Secondary brand color
-    let background = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // White background
-    let surface = Color(red: 0.4627, green: 0.8392, blue: 1.0)     // Surface color
-    let error = Color(red: 0.4627, green: 0.8392, blue: 1.0)        // Error red
-    let success = Color(red: 0.4627, green: 0.8392, blue: 1.0)      // Success green
-    let warning = Color(red: 0.4627, green: 0.8392, blue: 1.0)      // Warning orange
-    
-    let textPrimary = Color(red: 0.4627, green: 0.8392, blue: 1.0)  // Primary text
-    let textSecondary = Color(red: 0.4627, green: 0.8392, blue: 1.0) // Secondary text
-    let textTertiary = Color(red: 0.4627, green: 0.8392, blue: 1.0)  // Tertiary text
-    
-    let buttonPrimary = Color(red: 0.4627, green: 0.8392, blue: 1.0)    // Primary button
-    let buttonSecondary = Color(red: 0.4627, green: 0.8392, blue: 1.0)  // Secondary button
-    let buttonDisabled = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // Disabled button
-    
-    let statusActive = Color(red: 0.4627, green: 0.8392, blue: 1.0)     // Active status
-    let statusInactive = Color(red: 0.4627, green: 0.8392, blue: 1.0)  // Inactive status
-    let statusPending = Color(red: 0.4627, green: 0.8392, blue: 1.0)    // Pending status
+    let primary = Color(red: 0.18, green: 0.55, blue: 0.82)   // Steel Blue
+    let secondary = Color(red: 0.68, green: 0.85, blue: 0.90) // Light Sky Blue
+    let background = Color(red: 1.00, green: 1.00, blue: 1.00)   // White
+    let surface = Color(red: 0.95, green: 0.95, blue: 0.95)     // Light Gray
+    let error = Color(red: 0.85, green: 0.32, blue: 0.24)     // Error Red
+    let success = Color(red: 0.20, green: 0.80, blue: 0.20)   // Success Green
+    let warning = Color(red: 0.94, green: 0.78, blue: 0.20)   // Warning Gold
+
+    let textPrimary = Color(red: 0.00, green: 0.00, blue: 0.00) // Black
+    let textSecondary = Color(red: 0.40, green: 0.40, blue: 0.40) // Dark Gray
+    let textTertiary = Color(red: 0.60, green: 0.60, blue: 0.60)  // Gray
+
+    let buttonPrimary = Color(red: 0.18, green: 0.55, blue: 0.82) // Steel Blue
+    let buttonSecondary = Color(red: 0.68, green: 0.85, blue: 0.90) // Light Sky Blue
+    let buttonDisabled = Color(red: 0.80, green: 0.80, blue: 0.80)  // Light Gray
+
+    let statusActive = Color(red: 0.20, green: 0.80, blue: 0.20)    // Green
+    let statusInactive = Color(red: 0.80, green: 0.80, blue: 0.80)  // Gray
+    let statusPending = Color(red: 0.94, green: 0.78, blue: 0.20)   // Gold
 }
 
 // MARK: - Dark Theme
 struct DarkTheme: ColorTheme {
-    let primary = Color(red: 0.4627, green: 0.8392, blue: 1.0)      // Primary brand color (slightly lighter)
-    let secondary = Color(red: 0.4627, green: 0.8392, blue: 1.0)    // Secondary brand color (slightly lighter)
-    let background = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // Black background
-    let surface = Color(red: 0.4627, green: 0.8392, blue: 1.0)     // Dark surface
-    let error = Color(red: 0.4627, green: 0.8392, blue: 1.0)        // Error red
-    let success = Color(red: 0.4627, green: 0.8392, blue: 1.0)     // Success green
-    let warning = Color(red: 0.4627, green: 0.8392, blue: 1.0)      // Warning orange
-    
-    let textPrimary = Color(red: 0.4627, green: 0.8392, blue: 1.0) // Primary text
-    let textSecondary = Color(red: 0.4627, green: 0.8392, blue: 1.0) // Secondary text
-    let textTertiary = Color(red: 0.4627, green: 0.8392, blue: 1.0)  // Tertiary text
-    
-    let buttonPrimary = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // Primary button
-    let buttonSecondary = Color(red: 0.4627, green: 0.8392, blue: 1.0)  // Secondary button
-    let buttonDisabled = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // Disabled button
-    
-    let statusActive = Color(red: 0.4627, green: 0.8392, blue: 1.0)     // Active status
-    let statusInactive = Color(red: 0.4627, green: 0.8392, blue: 1.0)   // Inactive status
-    let statusPending = Color(red: 0.4627, green: 0.8392, blue: 1.0)    // Pending status
+    let primary = Color(red: 0.30, green: 0.70, blue: 0.90)   // Slightly lighter Steel Blue
+    let secondary = Color(red: 0.50, green: 0.75, blue: 0.85) // Slightly darker Light Sky Blue
+    let background = Color(red: 0.10, green: 0.10, blue: 0.12)   // Dark Gray/Almost Black
+    let surface = Color(red: 0.20, green: 0.20, blue: 0.22)     // Darker Gray
+    let error = Color(red: 1.00, green: 0.40, blue: 0.30)     // Brighter Red
+    let success = Color(red: 0.40, green: 0.90, blue: 0.40)   // Brighter Green
+    let warning = Color(red: 1.00, green: 0.85, blue: 0.30)   // Brighter Gold
+
+    let textPrimary = Color(red: 1.00, green: 1.00, blue: 1.00) // White
+    let textSecondary = Color(red: 0.80, green: 0.80, blue: 0.80) // Light Gray
+    let textTertiary = Color(red: 0.60, green: 0.60, blue: 0.60)  // Gray
+
+    let buttonPrimary = Color(red: 0.30, green: 0.70, blue: 0.90) // Slightly lighter Steel Blue
+    let buttonSecondary = Color(red: 0.50, green: 0.75, blue: 0.85) // Slightly darker Light Sky Blue
+    let buttonDisabled = Color(red: 0.40, green: 0.40, blue: 0.40)  // Dark Gray
+
+    let statusActive = Color(red: 0.40, green: 0.90, blue: 0.40)    // Brighter Green
+    let statusInactive = Color(red: 0.40, green: 0.40, blue: 0.40)  // Dark Gray
+    let statusPending = Color(red: 1.00, green: 0.85, blue: 0.30)   // Brighter Gold
 }
 
 // MARK: - Theme Manager
 class ThemeManager: ObservableObject {
     @Published var currentTheme: ColorTheme
+    @Published var isDarkMode: Bool
     
     init() {
-        // Default to system appearance
-        self.currentTheme = UITraitCollection.current.userInterfaceStyle == .dark ? DarkTheme() : LightTheme()
+        // Initialize with system appearance
+        let savedTheme = UserDefaults.standard.string(forKey: "AppTheme") ?? "system"
+        let isDark = savedTheme == "On" || (savedTheme == "System Settings" && UITraitCollection.current.userInterfaceStyle == .dark)
+        self.isDarkMode = true
+        self.currentTheme = isDark ? DarkTheme() : LightTheme()
     }
     
     func updateTheme(for colorScheme: ColorScheme) {
-        currentTheme = colorScheme == .dark ? DarkTheme() : LightTheme()
+        let savedTheme = UserDefaults.standard.string(forKey: "AppTheme") ?? "system"
+        
+        switch savedTheme {
+        case "On":
+            isDarkMode = true
+            currentTheme = DarkTheme()
+        case "Off":
+            isDarkMode = false
+            currentTheme = LightTheme()
+        case "System Settings":
+            isDarkMode = colorScheme == .dark
+            currentTheme = colorScheme == .dark ? DarkTheme() : LightTheme()
+        default:
+            isDarkMode = colorScheme == .dark
+            currentTheme = colorScheme == .dark ? DarkTheme() : LightTheme()
+        }
     }
 }
 
