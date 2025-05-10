@@ -9,7 +9,7 @@ struct LanguageSettingsView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Language Settings")
+                    Text("language_settings".localized)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(themeManager.currentTheme.textPrimary)
