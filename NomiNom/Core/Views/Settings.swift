@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @State private var profileImage: Image = Image(systemName: "person.circle.fill")
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -20,9 +22,19 @@ struct SettingsView: View {
                     // Profile Button
                     NavigationLink(destination: /* Placeholder for Profile Edit View */ Text("Profile Edit")) {
                         HStack {
-                            Text("Profile")
-                                .font(.headline)
-                                .foregroundColor(.primary)
+                            profileImage
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .clipShape(Circle())
+                                .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            VStack (alignment: .leading) {
+                                Text("Profile")
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                Text("View Profile")
+                            }
+                            
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .foregroundColor(.gray)
