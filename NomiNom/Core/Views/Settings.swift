@@ -70,7 +70,16 @@ struct SettingsView: View {
                             }
                             .padding(.vertical, 8)
                         }
-                        SettingsRow(title: "Language Preference")
+                        NavigationLink(destination: LanguageSettingsView()) {
+                            HStack {
+                                Text("Language Preference")
+                                    .foregroundColor(.primary)
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.vertical, 8)
+                        }
                     }
                 }
                 .padding()
