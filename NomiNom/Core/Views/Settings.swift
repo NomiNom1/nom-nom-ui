@@ -20,7 +20,7 @@ struct SettingsView: View {
                         .fontWeight(.bold)
                         .padding(.bottom)
                     // Profile Button
-                    NavigationLink(destination: /* Placeholder for Profile Edit View */ Text("Profile Edit")) {
+                    NavigationLink(destination: ProfileEditView()) {
                         HStack {
                             profileImage
                                 .resizable()
@@ -41,6 +41,8 @@ struct SettingsView: View {
                         }
                         .padding(.bottom, 20)
                         .padding(.top, 20)
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity)
                         .background(Color(.systemGray6))
                     }
                     
