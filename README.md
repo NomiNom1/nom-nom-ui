@@ -227,6 +227,3 @@ LLM
 
 # prompts
 I am creating an app similar to Doordash, Uber Eats, and Grubhub. Follow google / meta best practices for highly scalabe app design the size of TikTok, Instagram, or WeChat.
-
-
-I am creating an app similar to Doordash, Uber Eats, and Grubhub. Follow google / meta best practices for highly scalabe app design the size of TikTok, Instagram, or WeChat. I want to create a theme button. instead of a radio on off. When the user selects the dark mode button, I want to show another screen that shows 3 radio buttons. On, Off, System Settings. Also make sure we are handling the theme of the entire app. 
