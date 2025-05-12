@@ -17,12 +17,15 @@ final class APIClient: APIClientProtocol {
     static let shared = APIClient()
     private let baseURL = "http://localhost:3000/api"
     private let session: URLSession
+    private let decoder: JSONDecoder
     
     private init() {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 30
         config.timeoutIntervalForResource = 300
         self.session = URLSession(configuration: config)
+        self.decoder = JSONDecoder()
+        self.decoder.dateDecodingStrategy = .iso8601
     }
     
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
@@ -48,7 +51,7 @@ final class APIClient: APIClientProtocol {
             switch httpResponse.statusCode {
             case 200...299:
                 do {
-                    return try JSONDecoder().decode(T.self, from: data)
+                    return try decoder.decode(T.self, from: data)
                 } catch {
                     throw APIError.decodingError(error)
                 }
@@ -66,4 +69,4 @@ final class APIClient: APIClientProtocol {
             throw APIError.networkError(error)
         }
     }
-} 
+}

@@ -9,8 +9,8 @@ struct User: Codable {
     let orderHistory: [String]
     let deliveryAddresses: [String]
     let paymentMethods: [String]
-    let createdAt: Date
-    let updatedAt: Date
+    let createdAt: String
+    let updatedAt: String
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -32,9 +32,12 @@ protocol UserServiceProtocol {
 
 final class UserService: UserServiceProtocol {
     private let apiClient: APIClientProtocol
+    private let decoder: JSONDecoder
     
     init(apiClient: APIClientProtocol = APIClient.shared) {
         self.apiClient = apiClient
+        self.decoder = JSONDecoder()
+        self.decoder.dateDecodingStrategy = .iso8601
     }
     
     func fetchUser(id: String) async throws -> User {

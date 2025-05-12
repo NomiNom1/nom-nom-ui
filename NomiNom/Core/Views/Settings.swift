@@ -136,10 +136,7 @@ struct SettingsView: View {
     private func loadUserData() async {
         isLoading = true
         do {
-            print("fetching user")
             user = try await userService.fetchUser(id: "6820d662bdc2a39900706b74")
-            print("user")
-            print(user)
         } catch {
             print(error)
             errorMessage = error.localizedDescription
