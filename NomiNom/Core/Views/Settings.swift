@@ -167,4 +167,5 @@ struct SettingsRow: View {
 
 #Preview {
     SettingsView()
+        .environmentObject(UserSessionManager.shared)
 }

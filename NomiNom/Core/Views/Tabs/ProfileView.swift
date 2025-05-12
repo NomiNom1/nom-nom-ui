@@ -4,18 +4,11 @@ struct ProfileView: View {
     // MARK: - Properties
     @State private var profileImage: Image = Image(systemName: "person.circle.fill")
     @State private var memberSince = "May 20"
-    @State private var user: User?
-    @State private var isLoading = false
-    @State private var errorMessage: String?
-    private let userService: UserServiceProtocol
-    
-    init(userService: UserServiceProtocol = UserService()) {
-        self.userService = userService
-    }
+    @EnvironmentObject private var userSessionManager: UserSessionManager
     
     // MARK: - Body
     var body: some View {
-        NavigationView { // Ensure the whole view is in a NavigationView
+        NavigationView {
             ScrollView {
                 VStack(spacing: 8) {
                     // Top Bar with Profile Picture and Icons
@@ -29,7 +22,6 @@ struct ProfileView: View {
                             .clipShape(Circle())
                             .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                         Spacer()
-                        
                         
                         HStack(spacing: 20) {
                             Button(action: { /* Handle notifications */ }) {
@@ -50,11 +42,10 @@ struct ProfileView: View {
                     
                     // User Info Section
                     VStack(spacing: 4) {
-                        if let user = user {
+                        if let user = userSessionManager.currentUser {
                             Text("\(user.firstName) \(user.lastName)")
                                 .font(.title2)
                                 .fontWeight(.bold)
-                            
                         } else {
                             Text("Profile")
                                 .font(.title2)
@@ -63,9 +54,6 @@ struct ProfileView: View {
                                 .font(.title2)
                                 .fontWeight(.bold)
                         }
-                        // Text("John Doe") // Replace with actual user name
-                        //     .font(.title2)
-                        //     .fontWeight(.bold)
                         
                         Text("NomiNom member since \(memberSince)")
                             .font(.subheadline)
@@ -77,16 +65,16 @@ struct ProfileView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ProfileButton(icon: "list.bullet", title: "Orders")
-                            NavigationLink(destination: SettingsView()) { // Make Settings button a NavigationLink
+                            NavigationLink(destination: SettingsView()) {
                                 ProfileButtonContent(icon: "list.bullet", title: "Orders")
                             }
-                            NavigationLink(destination: SettingsView()) { // Make Settings button a NavigationLink
+                            NavigationLink(destination: SettingsView()) {
                                 ProfileButtonContent(icon: "gearshape.fill", title: "Settings")
                             }
-                            NavigationLink(destination: SettingsView()) { // Make Settings button a NavigationLink
+                            NavigationLink(destination: SettingsView()) {
                                 ProfileButtonContent(icon: "person.fill", title: "Profile")
                             }
-                            NavigationLink(destination: SettingsView()) { // Make Settings button a NavigationLink
+                            NavigationLink(destination: SettingsView()) {
                                 ProfileButtonContent(icon: "gift.fill", title: "Rewards")
                             }
                         }
@@ -99,29 +87,15 @@ struct ProfileView: View {
             .navigationTitle("Me")
             .navigationBarHidden(true)
             .task {
-                await loadUserData()
-            }
-            .alert("Error", isPresented: .constant(errorMessage != nil)) {
-                Button("OK") {
-                    errorMessage = nil
+                if !userSessionManager.isSignedIn {
+                    do {
+                        try await userSessionManager.signIn(userId: "6820d662bdc2a39900706b74")
+                    } catch {
+                        print("Error signing in: \(error)")
+                    }
                 }
-            } message: {
-                Text(errorMessage ?? "")
             }
         }
-    }
-    
-    private func loadUserData() async {
-        isLoading = true
-        do {
-            print("fetching user")
-            user = try await userService.fetchUser(id: "6820d662bdc2a39900706b74")
-            print(user)
-        } catch {
-            print(error)
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
     }
 }
 
@@ -162,4 +136,5 @@ struct ProfileButton: View {
 
 #Preview {
     ProfileView()
+        .environmentObject(UserSessionManager.shared)
 }
