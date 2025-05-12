@@ -15,7 +15,7 @@ protocol APIClientProtocol {
 
 final class APIClient: APIClientProtocol {
     static let shared = APIClient()
-    private let baseURL = "http://localhost:3000"
+    private let baseURL = "http://localhost:3000/api"
     private let session: URLSession
     
     private init() {
