@@ -9,7 +9,16 @@ import SwiftUI
 
 struct SettingsView: View {
     @State private var profileImage: Image = Image(systemName: "person.circle.fill")
-
+    @State private var user: User?
+    @State private var isLoading = false
+    @State private var errorMessage: String?
+    
+    private let userService: UserServiceProtocol
+    
+    init(userService: UserServiceProtocol = UserService()) {
+        self.userService = userService
+    }
+    
     var body: some View {
         NavigationView {
             ScrollView {
@@ -19,6 +28,7 @@ struct SettingsView: View {
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .padding(.bottom)
+                    
                     // Profile Button
                     NavigationLink(destination: ProfileEditView()) {
                         HStack {
@@ -29,10 +39,21 @@ struct SettingsView: View {
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                             VStack (alignment: .leading) {
-                                Text("Profile")
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Text("View Profile")
+                                if let user = user {
+                                    Text("\(user.firstName) \(user.lastName)")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Text(user.email)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                } else {
+                                    Text("Profile")
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Text("Loading...")
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
                             }
                             
                             Spacer()
@@ -98,8 +119,29 @@ struct SettingsView: View {
                 }
                 .padding()
             }
-            .navigationBarTitleDisplayMode(.inline) // To prevent large title on this screen
+            .navigationBarTitleDisplayMode(.inline)
+            .task {
+                await loadUserData()
+            }
+            .alert("Error", isPresented: .constant(errorMessage != nil)) {
+                Button("OK") {
+                    errorMessage = nil
+                }
+            } message: {
+                Text(errorMessage ?? "")
+            }
         }
+    }
+    
+    private func loadUserData() async {
+        isLoading = true
+        do {
+            user = try await userService.fetchUser(id: "6820d662bdc2a39900706b74")
+        } catch {
+            print(error)
+            errorMessage = error.localizedDescription
+        }
+        isLoading = false
     }
 }
 

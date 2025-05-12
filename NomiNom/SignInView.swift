@@ -10,7 +10,7 @@ struct SignInView: View {
     @State private var isLoading = false
     @State private var isEmailValid = false
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var authService = AuthenticationService.shared
+    // @StateObject private var authService = AuthenticationService.shared
     @State private var navigateToMain = false
     @EnvironmentObject private var themeManager: ThemeManager
     
@@ -139,7 +139,8 @@ struct SignInView: View {
 
     private func handleGoogleSignIn() async {
         do {
-            try await authService.signInWithGoogle()
+            print("Google sign in")
+            // try await authService.signInWithGoogle()
         } catch {
             errorMessage = error.localizedDescription
             showError = true
