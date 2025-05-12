@@ -11,14 +11,15 @@ import SwiftUI
 struct NomiNomApp: App {
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var languageManager = LanguageManager.shared
+    @StateObject private var userSessionManager = UserSessionManager.shared
     
     var body: some Scene {
         WindowGroup {
             LandingPage()
                 .environmentObject(themeManager)
                 .environmentObject(languageManager)
+                .environmentObject(userSessionManager)
                 .environment(\.locale, languageManager.currentLanguage.locale)
-
         }
     }
 }

@@ -196,5 +196,6 @@ struct SocialSignInButton: View {
     NavigationStack {
         SignInView()
             .environmentObject(ThemeManager())
+            .environmentObject(UserSessionManager.shared)
     }
 }

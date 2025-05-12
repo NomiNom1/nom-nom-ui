@@ -79,5 +79,6 @@ struct LandingPage_Previews: PreviewProvider {
         LandingPage()
             .environmentObject(ThemeManager())
             .environmentObject(LanguageManager.shared)
+            .environmentObject(UserSessionManager.shared)
     }
 } 
