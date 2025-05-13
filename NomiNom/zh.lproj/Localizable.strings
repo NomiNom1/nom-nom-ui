@@ -28,6 +28,13 @@
 "email_placeholder" = "邮箱";
 "continue" = "继续";
 
+/* MainTabView */
+"home_tab" = "首页";
+"offers_tab" = "优惠";
+"orders_tab" = "订单";
+"browse_tab" = "浏览";
+"me_tab" = "我的";
+
 /* Home */
 "select_location" = "选择位置";
 "featured_restaurants" = "精选餐厅";

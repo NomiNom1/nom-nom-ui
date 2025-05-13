@@ -28,6 +28,13 @@
 "email_placeholder" = "Email";
 "continue" = "Continue";
 
+/* MainTabView */
+"home_tab" = "Home";
+"offers_tab" = "Offers";
+"orders_tab" = "Orders";
+"browse_tab" = "Browse";
+"me_tab" = "Me";
+
 /* Home */
 "select_location" = "Select location";
 "featured_restaurants" = "Featured Restaurants";

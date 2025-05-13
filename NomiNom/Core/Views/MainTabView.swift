@@ -7,31 +7,31 @@ struct MainTabView: View {
         TabView(selection: $selectedTab) {
             HomeView()
                 .tabItem {
-                    Label("Home", systemImage: "house.fill")
+                    Label("home_tab".localized, systemImage: "house.fill")
                 }
                 .tag(0)
             
             OffersView()
                 .tabItem {
-                    Label("Offers", systemImage: "tag.fill")
+                    Label("offers_tab".localized, systemImage: "tag.fill")
                 }
                 .tag(1)
             
             OrdersView()
                 .tabItem {
-                    Label("Orders", systemImage: "list.bullet")
+                    Label("orders_tab".localized, systemImage: "list.bullet")
                 }
                 .tag(2)
             
             BrowseView()
                 .tabItem {
-                    Label("Browse", systemImage: "magnifyingglass")
+                    Label("browse_tab".localized, systemImage: "magnifyingglass")
                 }
                 .tag(3)
             
             ProfileView()
                 .tabItem {
-                    Label("Me", systemImage: "person.fill")
+                    Label("me_tab".localized, systemImage: "person.fill")
                 }
                 .tag(4)
         }
@@ -42,4 +42,5 @@ struct MainTabView: View {
 
 #Preview {
     MainTabView()
+        .environmentObject(LanguageManager.shared)
 } 
