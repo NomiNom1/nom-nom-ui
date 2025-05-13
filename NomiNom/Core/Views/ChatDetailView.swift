@@ -75,7 +75,7 @@ struct ChatDetailView: View {
             receiverId: chat.participantId,
             content: messageText,
             type: .text,
-            timestamp: Date(),
+            timestamp: "Date()",
             status: .sent
         )
         
@@ -106,7 +106,7 @@ struct MessageBubble: View {
                     .cornerRadius(16)
                 
                 HStack(spacing: 4) {
-                    Text(message.timestamp, style: .time)
+                    Text("message.timestamp")
                         .font(.caption2)
                         .foregroundColor(.gray)
                     

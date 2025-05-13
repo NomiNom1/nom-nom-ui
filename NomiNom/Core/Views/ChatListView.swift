@@ -60,11 +60,11 @@ struct ChatRowView: View {
             
             Spacer()
             
-            if let lastMessage = chat.lastMessage {
-                Text(lastMessage.timestamp, style: .time)
-                    .font(.caption)
-                    .foregroundColor(.gray)
-            }
+            // if let lastMessage = chat.lastMessage {
+            //     Text(lastMessage.timestamp, style: .time)
+            //         .font(.caption)
+            //         .foregroundColor(.gray)
+            // }
         }
         .padding(.vertical, 8)
     }
@@ -78,6 +78,54 @@ class ChatListViewModel: ObservableObject {
     init(chatService: ChatServiceProtocol = ChatService.shared) {
         self.chatService = chatService
         setupSubscriptions()
+        
+        // Add dummy data
+        let dummyChats = [
+            Chat(
+                id: "1",
+                participantId: "1",
+                participantName: "John Smith",
+                lastMessage: ChatMessage(
+                    id: "1",
+                    senderId: "1",
+                    receiverId: "current_user",
+                    content: "Hey, when will my order arrive?",
+                    type: MessageType.text,
+                    timestamp: Date().addingTimeInterval(-300).ISO8601Format(), // 5 minutes ago
+                    status: MessageStatus.sent
+                )
+            ),
+            Chat(
+                id: "2",
+                participantId: "2",
+                participantName: "Sarah Johnson",
+                lastMessage: ChatMessage(
+                    id: "2",
+                    senderId: "current_user",
+                    receiverId: "2",
+                    content: "Your order has been confirmed!",
+                    type: MessageType.text,
+                    timestamp: Date().addingTimeInterval(-3600).ISO8601Format(), // 1 hour ago
+                    status: MessageStatus.sent
+                )
+            ),
+            Chat(
+                id: "3",
+                participantId: "3",
+                participantName: "Mike Wilson",
+                lastMessage: ChatMessage(
+                    id: "3",
+                    senderId: "3",
+                    receiverId: "current_user",
+                    content: "Thank you for your order!",
+                    type: MessageType.text,
+                    timestamp: Date().addingTimeInterval(-86400).ISO8601Format(), // 1 day ago
+                    status: MessageStatus.sent
+                )
+            )
+        ]
+        
+        self.chats = dummyChats
     }
     
     private func setupSubscriptions() {
@@ -112,16 +160,16 @@ class ChatListViewModel: ObservableObject {
             message.senderId == UserSessionManager.shared.currentUser?.id ? message.receiverId : message.senderId
         }
         
-        // Create chat objects
-        chats = groupedMessages.map { participantId, messages in
-            Chat(
-                id: participantId,
-                participantId: participantId,
-                participantName: "User \(participantId.prefix(4))", // In a real app, fetch user details
-                lastMessage: messages.sorted { $0.timestamp > $1.timestamp }.first
-            )
-        }
-        .sorted { $0.lastMessage?.timestamp ?? Date() > $1.lastMessage?.timestamp ?? Date() }
+//        // Create chat objects
+//        chats = groupedMessages.map { participantId, messages in
+//            Chat(
+//                id: participantId,
+//                participantId: participantId,
+//                participantName: "User \(participantId.prefix(4))", // In a real app, fetch user details
+//                lastMessage: messages.sorted { $0.timestamp > $1.timestamp }.first
+//            )
+//        }
+//        .sorted { $0.lastMessage?.timestamp ?? Date() > $1.lastMessage?.timestamp ?? Date() }
     }
 }
 

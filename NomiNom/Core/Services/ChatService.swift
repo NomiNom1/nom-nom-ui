@@ -20,7 +20,7 @@ struct ChatMessage: Identifiable, Codable {
     let receiverId: String
     let content: String
     let type: MessageType
-    let timestamp: Date
+    let timestamp: String
     var status: MessageStatus
     
     enum CodingKeys: String, CodingKey {
