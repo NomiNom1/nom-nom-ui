@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var showLocationSelector = false
+    @State private var showNotifications = false
     @StateObject private var locationManager = LocationManager()
     
     var body: some View {
@@ -33,9 +34,7 @@ struct HomeView: View {
                     
                     // Action Icons
                     HStack(spacing: 16) {
-                        Button(action: {
-                            // Handle notifications
-                        }) {
+                        NavigationLink(destination: NotificationsView()) {
                             Image(systemName: "bell.fill")
                                 .foregroundColor(.primary)
                                 .font(.system(size: 20))

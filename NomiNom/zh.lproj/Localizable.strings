@@ -5,4 +5,14 @@
 /* Language Settings */
 "language_settings" = "语言设置";
 "english" = "英语";
-"chinese" = "中文"; 
+"chinese" = "中文";
+
+/* Notifications */
+"notifications_title" = "通知";
+"notifications_greeting" = "你好，{name}";
+"notifications_promo_title" = "特别优惠！";
+"notifications_promo_description" = "使用代码 WELCOME20 享受下次订单 20% 折扣";
+"notifications_order_title" = "订单更新";
+"notifications_order_description" = "您的订单 #12345 正在配送中！";
+"notifications_system_title" = "新功能";
+"notifications_system_description" = "查看我们的新团购功能！"; 
