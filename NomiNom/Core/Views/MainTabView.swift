@@ -29,11 +29,17 @@ struct MainTabView: View {
                 }
                 .tag(3)
             
+            ChatListView()
+                .tabItem {
+                    Label("chat_tab".localized, systemImage: "message.fill")
+                }
+                .tag(4)
+            
             ProfileView()
                 .tabItem {
                     Label("me_tab".localized, systemImage: "person.fill")
                 }
-                .tag(4)
+                .tag(5)
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .edgesIgnoringSafeArea(.top)

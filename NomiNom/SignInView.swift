@@ -105,7 +105,7 @@ struct SignInView: View {
                             .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
                             .foregroundColor(.white)
                             .cornerRadius(10)
-                            .disabled(!isEmailValid || isLoading)
+//                            .disabled(!isEmailValid || isLoading)
                             .padding(.top, 16)
                         }
                         .padding(.horizontal)
