@@ -6,3 +6,13 @@
 "language_settings" = "Language Settings";
 "english" = "English";
 "chinese" = "Chinese";
+
+/* Notifications */
+"notifications_title" = "Notifications";
+"notifications_greeting" = "Hello, {name}";
+"notifications_promo_title" = "Special Offer!";
+"notifications_promo_description" = "Get 20% off your next order with code WELCOME20";
+"notifications_order_title" = "Order Update";
+"notifications_order_description" = "Your order #12345 is on its way!";
+"notifications_system_title" = "New Feature";
+"notifications_system_description" = "Check out our new group ordering feature!";
