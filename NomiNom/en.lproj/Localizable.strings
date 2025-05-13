@@ -16,3 +16,59 @@
 "notifications_order_description" = "Your order #12345 is on its way!";
 "notifications_system_title" = "New Feature";
 "notifications_system_description" = "Check out our new group ordering feature!";
+
+/* Sign In */
+"sign_in_header" = "Sign in or create an account";
+"continue_with_google" = "Continue with Google";
+"continue_with_apple" = "Continue with Apple";
+"continue_with_facebook" = "Continue with Facebook";
+"or" = "OR";
+"email_sign_in_header" = "Or get started with email";
+"email_sign_in_subheader" = "If you already have an account, use your Grubhub or Seamless email";
+"email_placeholder" = "Email";
+"continue" = "Continue";
+
+/* MainTabView */
+"home_tab" = "Home";
+"offers_tab" = "Offers";
+"orders_tab" = "Orders";
+"browse_tab" = "Browse";
+"me_tab" = "Me";
+
+/* Home */
+"select_location" = "Select location";
+"featured_restaurants" = "Featured Restaurants";
+"popular_categories" = "Popular Categories";
+"recent_orders" = "Recent Orders";
+"reorder" = "Reorder";
+
+/* Offers */
+"offers" = "Offers";
+"active_offers" = "Active Offers";
+"expiring_soon" = "Expiring Soon";
+"expires_in_24h" = "Expires in 24 hours";
+"use_offer" = "Use Offer";
+
+/* Browse */
+"browse" = "Browse";
+"search_restaurants" = "Search restaurants";
+"pizza" = "Pizza";
+"burgers" = "Burgers";
+"sushi" = "Sushi";
+"chinese" = "Chinese";
+"mexican" = "Mexican";
+"italian" = "Italian";
+"indian" = "Indian";
+"thai" = "Thai";
+"vietnamese" = "Vietnamese";
+"desserts" = "Desserts";
+
+/* Orders */
+"orders" = "Orders";
+"active_orders" = "Active Orders";
+"past_orders" = "Past Orders";
+"preparing" = "Preparing";
+"estimated_delivery" = "Estimated Delivery";
+"contact_restaurant" = "Contact Restaurant";
+"track_order" = "Track Order";
+"delivered" = "Delivered";
