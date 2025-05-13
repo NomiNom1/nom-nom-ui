@@ -5,8 +5,8 @@ struct HomeView: View {
     @StateObject private var locationManager = LocationManager()
     
     var body: some View {
-        NavigationView {
-            VStack {
+        NavigationStack {
+            VStack(spacing: 0) {
                 // Location Selector Button
                 Button(action: {
                     showLocationSelector = true
@@ -32,7 +32,7 @@ struct HomeView: View {
                 
                 Spacer()
             }
-            .navigationTitle("Home")
+            .navigationBarHidden(true)
             .sheet(isPresented: $showLocationSelector) {
                 LocationSelectorView()
             }
