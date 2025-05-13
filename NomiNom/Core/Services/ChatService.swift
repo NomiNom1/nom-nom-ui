@@ -1,233 +1,185 @@
-//import Foundation
-//import FirebaseDatabase
-//import FirebaseAuth
-//import Combine
-//
-//class ChatService: ObservableObject {
-//    private var databaseRef: DatabaseReference
-//    private var messagesRef: DatabaseReference
-//    private var messageListener: DatabaseHandle?
-//    private var presenceRef: DatabaseReference
-//    private var typingRef: DatabaseReference
-//    private var readReceiptRef: DatabaseReference
-//    private var reactionsRef: DatabaseReference
-//    private var cancellables = Set<AnyCancellable>()
-//    
-//    @Published var messages: [ChatMessage] = []
-//    @Published var isConnected: Bool = false
-//    @Published var typingUsers: [String: Bool] = [:]
-//    @Published var onlineUsers: [String: Bool] = [:]
-//    @Published var readReceipts: [String: [String: Date]] = [:] // messageId: [userId: timestamp]
-//    @Published var messageReactions: [String: [String: [String]]] = [:] // messageId: [emoji: [userId]]
-//    
-//    init() {
-//        self.databaseRef = Database.database().reference()
-//        self.messagesRef = databaseRef.child("chats")
-//        self.presenceRef = databaseRef.child("presence")
-//        self.typingRef = databaseRef.child("typing")
-//        self.readReceiptRef = databaseRef.child("readReceipts")
-//        self.reactionsRef = databaseRef.child("reactions")
-//        
-//        setupPresenceSystem()
-//    }
-//    
-//    private func setupPresenceSystem() {
-//        // Set up presence system
-//        let connectedRef = Database.database().reference(withPath: ".info/connected")
-//        connectedRef.observe(.value) { [weak self] snapshot in
-//            guard let self = self,
-//                  let isConnected = snapshot.value as? Bool,
-//                  isConnected,
-//                  let currentUserId = Auth.auth().currentUser?.uid else { return }
-//            
-//            // Set up presence
-//            let userPresenceRef = self.presenceRef.child(currentUserId)
-//            userPresenceRef.onDisconnectSetValue(["status": "offline", "lastSeen": ServerValue.timestamp()])
-//            userPresenceRef.setValue(["status": "online", "lastSeen": ServerValue.timestamp()])
-//        }
-//    }
-//    
-//    func startListeningToChat(chatId: String) {
-//        let chatRef = messagesRef.child(chatId)
-//        
-//        // Listen for messages
-//        messageListener = chatRef.observe(.childAdded) { [weak self] snapshot in
-//            guard let self = self,
-//                  let messageData = snapshot.value as? [String: Any],
-//                  let message = ChatMessage(dictionary: messageData) else {
-//                return
-//            }
-//            
-//            DispatchQueue.main.async {
-//                self.messages.append(message)
-//            }
-//        }
-//        
-//        // Listen for typing status
-//        typingRef.child(chatId).observe(.value) { [weak self] snapshot in
-//            guard let self = self,
-//                  let typingData = snapshot.value as? [String: Bool] else { return }
-//            
-//            DispatchQueue.main.async {
-//                self.typingUsers = typingData
-//            }
-//        }
-//        
-//        // Listen for online status
-//        presenceRef.observe(.value) { [weak self] snapshot in
-//            guard let self = self,
-//                  let presenceData = snapshot.value as? [String: [String: Any]] else { return }
-//            
-//            DispatchQueue.main.async {
-//                self.onlineUsers = presenceData.mapValues { data in
-//                    return (data["status"] as? String) == "online"
-//                }
-//            }
-//        }
-//        
-//        // Listen for read receipts
-//        readReceiptRef.child(chatId).observe(.value) { [weak self] snapshot in
-//            guard let self = self,
-//                  let receiptData = snapshot.value as? [String: [String: TimeInterval]] else { return }
-//            
-//            DispatchQueue.main.async {
-//                self.readReceipts = receiptData.mapValues { userTimestamps in
-//                    userTimestamps.mapValues { Date(timeIntervalSince1970: $0) }
-//                }
-//            }
-//        }
-//        
-//        // Listen for reactions
-//        reactionsRef.child(chatId).observe(.value) { [weak self] snapshot in
-//            guard let self = self,
-//                  let reactionData = snapshot.value as? [String: [String: [String]]] else { return }
-//            
-//            DispatchQueue.main.async {
-//                self.messageReactions = reactionData
-//            }
-//        }
-//    }
-//    
-//    func sendMessage(_ message: ChatMessage, to chatId: String) {
-//        let chatRef = messagesRef.child(chatId)
-//        let messageRef = chatRef.childByAutoId()
-//        
-//        messageRef.setValue(message.toDictionary()) { [weak self] error, _ in
-//            if let error = error {
-//                print("Error sending message: \(error.localizedDescription)")
-//            } else {
-//                // Set initial read receipt for sender
-//                self?.markMessageAsRead(messageId: messageRef.key ?? "", in: chatId)
-//            }
-//        }
-//    }
-//    
-//    func setTypingStatus(isTyping: Bool, in chatId: String) {
-//        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-//        typingRef.child(chatId).child(currentUserId).setValue(isTyping)
-//    }
-//    
-//    func markMessageAsRead(messageId: String, in chatId: String) {
-//        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-//        readReceiptRef.child(chatId)
-//            .child(messageId)
-//            .child(currentUserId)
-//            .setValue(ServerValue.timestamp())
-//    }
-//    
-//    func addReaction(_ emoji: String, to messageId: String, in chatId: String) {
-//        guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-//        
-//        let reactionRef = reactionsRef.child(chatId).child(messageId).child(emoji)
-//        
-//        // Get current reactions
-//        reactionRef.observeSingleEvent(of: .value) { [weak self] snapshot in
-//            guard let self = self else { return }
-//            
-//            var currentUsers = snapshot.value as? [String] ?? []
-//            
-//            // Toggle reaction
-//            if currentUsers.contains(currentUserId) {
-//                currentUsers.removeAll { $0 == currentUserId }
-//            } else {
-//                currentUsers.append(currentUserId)
-//            }
-//            
-//            // Update or remove reaction
-//            if currentUsers.isEmpty {
-//                reactionRef.removeValue()
-//            } else {
-//                reactionRef.setValue(currentUsers)
-//            }
-//        }
-//    }
-//    
-//    func stopListening() {
-//        if let listener = messageListener {
-//            messagesRef.removeObserver(withHandle: listener)
-//        }
-//        typingRef.removeAllObservers()
-//        presenceRef.removeAllObservers()
-//        readReceiptRef.removeAllObservers()
-//        reactionsRef.removeAllObservers()
-//    }
-//}
-//
-//struct ChatMessage: Identifiable, Codable {
-//    let id: String
-//    let senderId: String
-//    let senderName: String
-//    let content: String
-//    let timestamp: Date
-//    let type: MessageType
-//    
-//    enum MessageType: String, Codable {
-//        case text
-//        case image
-//        case location
-//    }
-//    
-//    init(id: String = UUID().uuidString,
-//         senderId: String,
-//         senderName: String,
-//         content: String,
-//         timestamp: Date = Date(),
-//         type: MessageType = .text) {
-//        self.id = id
-//        self.senderId = senderId
-//        self.senderName = senderName
-//        self.content = content
-//        self.timestamp = timestamp
-//        self.type = type
-//    }
-//    
-//    init?(dictionary: [String: Any]) {
-//        guard let id = dictionary["id"] as? String,
-//              let senderId = dictionary["senderId"] as? String,
-//              let senderName = dictionary["senderName"] as? String,
-//              let content = dictionary["content"] as? String,
-//              let timestamp = dictionary["timestamp"] as? TimeInterval,
-//              let typeString = dictionary["type"] as? String,
-//              let type = MessageType(rawValue: typeString) else {
-//            return nil
-//        }
-//        
-//        self.id = id
-//        self.senderId = senderId
-//        self.senderName = senderName
-//        self.content = content
-//        self.timestamp = Date(timeIntervalSince1970: timestamp)
-//        self.type = type
-//    }
-//    
-//    func toDictionary() -> [String: Any] {
-//        return [
-//            "id": id,
-//            "senderId": senderId,
-//            "senderName": senderName,
-//            "content": content,
-//            "timestamp": timestamp.timeIntervalSince1970,
-//            "type": type.rawValue
-//        ]
-//    }
-//} 
+import Foundation
+import Combine
+
+enum MessageType: String, Codable {
+    case text = "TEXT"
+    case image = "IMAGE"
+    case location = "LOCATION"
+    case system = "SYSTEM"
+}
+
+enum MessageStatus: String, Codable {
+    case sent = "SENT"
+    case delivered = "DELIVERED"
+    case read = "READ"
+}
+
+struct ChatMessage: Identifiable, Codable {
+    let id: String
+    let senderId: String
+    let receiverId: String
+    let content: String
+    let type: MessageType
+    let timestamp: Date
+    var status: MessageStatus
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case senderId
+        case receiverId
+        case content
+        case type
+        case timestamp
+        case status
+    }
+}
+
+protocol ChatServiceProtocol {
+    func connect(userId: String) async throws
+    func disconnect()
+    func sendMessage(_ message: ChatMessage) async throws
+    func markMessageAsRead(_ messageId: String) async throws
+    var messages: AnyPublisher<[ChatMessage], Never> { get }
+    var connectionStatus: AnyPublisher<Bool, Never> { get }
+}
+
+final class ChatService: ChatServiceProtocol {
+    static let shared = ChatService()
+    
+    private let baseURL = "ws://localhost:3000"
+    private var webSocketTask: URLSessionWebSocketTask?
+    private let messagesSubject = CurrentValueSubject<[ChatMessage], Never>([])
+    private let connectionStatusSubject = CurrentValueSubject<Bool, Never>(false)
+    private var cancellables = Set<AnyCancellable>()
+    
+    var messages: AnyPublisher<[ChatMessage], Never> {
+        messagesSubject.eraseToAnyPublisher()
+    }
+    
+    var connectionStatus: AnyPublisher<Bool, Never> {
+        connectionStatusSubject.eraseToAnyPublisher()
+    }
+    
+    private init() {
+        setupMessageHandling()
+    }
+    
+    private func setupMessageHandling() {
+        // Handle incoming messages
+        NotificationCenter.default.publisher(for: .newMessageReceived)
+            .compactMap { notification -> ChatMessage? in
+                notification.userInfo?["message"] as? ChatMessage
+            }
+            .sink { [weak self] message in
+                self?.handleNewMessage(message)
+            }
+            .store(in: &cancellables)
+    }
+    
+    func connect(userId: String) async throws {
+        guard let url = URL(string: "\(baseURL)?userId=\(userId)") else {
+            throw ChatError.invalidURL
+        }
+        
+        let session = URLSession(configuration: .default)
+        webSocketTask = session.webSocketTask(with: url)
+        
+        webSocketTask?.resume()
+        connectionStatusSubject.send(true)
+        
+        // Start receiving messages
+        try await receiveMessages()
+    }
+    
+    func disconnect() {
+        webSocketTask?.cancel(with: .normalClosure, reason: nil)
+        webSocketTask = nil
+        connectionStatusSubject.send(false)
+    }
+    
+    private func receiveMessages() async throws {
+        guard let webSocketTask = webSocketTask else { return }
+        
+        do {
+            let message = try await webSocketTask.receive()
+            switch message {
+            case .string(let text):
+                if let data = text.data(using: .utf8),
+                   let message = try? JSONDecoder().decode(ChatMessage.self, from: data) {
+                    NotificationCenter.default.post(
+                        name: .newMessageReceived,
+                        object: nil,
+                        userInfo: ["message": message]
+                    )
+                }
+            case .data(let data):
+                if let message = try? JSONDecoder().decode(ChatMessage.self, from: data) {
+                    NotificationCenter.default.post(
+                        name: .newMessageReceived,
+                        object: nil,
+                        userInfo: ["message": message]
+                    )
+                }
+            @unknown default:
+                break
+            }
+            
+            // Continue receiving messages
+            try await receiveMessages()
+        } catch {
+            connectionStatusSubject.send(false)
+            throw ChatError.connectionError(error)
+        }
+    }
+    
+    func sendMessage(_ message: ChatMessage) async throws {
+        guard let webSocketTask = webSocketTask else {
+            throw ChatError.notConnected
+        }
+        
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(message)
+            let message = URLSessionWebSocketTask.Message.data(data)
+            try await webSocketTask.send(message)
+        } catch {
+            throw ChatError.sendError(error)
+        }
+    }
+    
+    func markMessageAsRead(_ messageId: String) async throws {
+        guard let webSocketTask = webSocketTask else {
+            throw ChatError.notConnected
+        }
+        
+        let readData: [String: Any] = [
+            "type": "markAsRead",
+            "messageId": messageId
+        ]
+        
+        do {
+            let data = try JSONSerialization.data(withJSONObject: readData)
+            let message = URLSessionWebSocketTask.Message.data(data)
+            try await webSocketTask.send(message)
+        } catch {
+            throw ChatError.sendError(error)
+        }
+    }
+    
+    private func handleNewMessage(_ message: ChatMessage) {
+        var currentMessages = messagesSubject.value
+        currentMessages.append(message)
+        messagesSubject.send(currentMessages)
+    }
+}
+
+enum ChatError: Error {
+    case invalidURL
+    case notConnected
+    case connectionError(Error)
+    case sendError(Error)
+}
+
+extension Notification.Name {
+    static let newMessageReceived = Notification.Name("newMessageReceived")
+} 
