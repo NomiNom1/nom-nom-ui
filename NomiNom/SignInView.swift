@@ -13,6 +13,7 @@ struct SignInView: View {
     // @StateObject private var authService = AuthenticationService.shared
     @State private var navigateToMain = false
     @EnvironmentObject private var themeManager: ThemeManager
+    @EnvironmentObject private var languageManager: LanguageManager
     
     var body: some View {
         NavigationStack {
@@ -24,7 +25,7 @@ struct SignInView: View {
                 ScrollView {
                     VStack(spacing: 24) {
                         // Header
-                        Text("Sign in or create an account")
+                        Text("sign_in_header".localized)
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(themeManager.currentTheme.textPrimary)
@@ -33,15 +34,25 @@ struct SignInView: View {
                         // Social Sign-in Buttons
                         VStack(spacing: 12) {
                             SocialSignInButton(
-                                title: "Continue with Google",
+                                title: "continue_with_google".localized,
                                 icon: "g.circle.fill",
                                 action: { Task { await handleGoogleSignIn() }}
                             )
                             .environmentObject(themeManager)
-                            // SocialSignInButton(title: "Continue with Amazon", icon: "a.circle.fill")
-                            // SocialSignInButton(title: "Continue with Apple", icon: "apple.logo")
-                            // SocialSignInButton(title: "Continue with Facebook", icon: "f.circle.fill")
-                            // SocialSignInButton(title: "Continue with WeChat", icon: "w.circle.fill")
+                            
+                            SocialSignInButton(
+                                title: "continue_with_apple".localized,
+                                icon: "apple.logo",
+                                action: { Task { await handleAppleSignIn() }}
+                            )
+                            .environmentObject(themeManager)
+                            
+                            SocialSignInButton(
+                                title: "continue_with_facebook".localized,
+                                icon: "f.circle.fill",
+                                action: { Task { await handleFacebookSignIn() }}
+                            )
+                            .environmentObject(themeManager)
                         }
                         .padding(.horizontal)
                         
@@ -50,7 +61,7 @@ struct SignInView: View {
                             Rectangle()
                                 .frame(height: 1)
                                 .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
-                            Text("OR")
+                            Text("or".localized)
                                 .foregroundColor(themeManager.currentTheme.textTertiary)
                             Rectangle()
                                 .frame(height: 1)
@@ -60,15 +71,15 @@ struct SignInView: View {
                         
                         // Email Section
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Or get started with email")
+                            Text("email_sign_in_header".localized)
                                 .font(.headline)
                                 .foregroundColor(themeManager.currentTheme.textPrimary)
                             
-                            Text("If you already have an account, use your Grubhub or Seamless email")
+                            Text("email_sign_in_subheader".localized)
                                 .font(.subheadline)
                                 .foregroundColor(themeManager.currentTheme.textSecondary)
                             
-                            TextField("Email", text: $email)
+                            TextField("email_placeholder".localized, text: $email)
                                 .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
                                 .textContentType(.emailAddress)
                                 .keyboardType(.emailAddress)
@@ -77,39 +88,24 @@ struct SignInView: View {
                                     isEmailValid = isValidEmail(newValue)
                                 }
                                 .padding(.top, 8)
-
-                            // Button(action: {
-                            //     navigateToMain = true
-                            //     // Task {
-                            //     //     await handleEmailSignIn()
-                            //     // }
-                            // }) {
-                            //     if isLoading {
-                            //         ProgressView()
-                            //             .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            //     } else {
-                            //         Text("Continue")
-                            //             .font(.headline)
-                            //     }
-                            // }
-                            // .padding()
-                            // .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
-                            // .foregroundColor(.white)
-                            // .cornerRadius(50)
-                            // .disabled(!isEmailValid || isLoading)
-                            // .padding(.top, 16)
                             
                             Button(action: {
                                 navigateToMain = true
                             }) {
-                                Text("Continue")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(themeManager.currentTheme.buttonPrimary)
-                                    .cornerRadius(10)
+                                if isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                } else {
+                                    Text("continue".localized)
+                                        .font(.headline)
+                                }
                             }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .disabled(!isEmailValid || isLoading)
                             .padding(.top, 16)
                         }
                         .padding(.horizontal)
@@ -146,6 +142,14 @@ struct SignInView: View {
             showError = true
         }
     }
+    
+    private func handleAppleSignIn() async {
+        // Implement Apple Sign In
+    }
+    
+    private func handleFacebookSignIn() async {
+        // Implement Facebook Sign In
+    }
 
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
@@ -173,6 +177,7 @@ struct SocialSignInButton: View {
     let title: String
     let icon: String
     let action: () -> Void
+    @EnvironmentObject private var themeManager: ThemeManager
     
     var body: some View {
         Button(action: action) {
@@ -183,10 +188,10 @@ struct SocialSignInButton: View {
                     .font(.headline)
                 Spacer()
             }
-            .foregroundColor(.primary)
+            .foregroundColor(themeManager.currentTheme.textPrimary)
             .padding()
             .frame(maxWidth: .infinity)
-            .background(Color(.systemGray6))
+            .background(themeManager.currentTheme.surface)
             .cornerRadius(10)
         }
     }
@@ -196,6 +201,7 @@ struct SocialSignInButton: View {
     NavigationStack {
         SignInView()
             .environmentObject(ThemeManager())
+            .environmentObject(LanguageManager.shared)
             .environmentObject(UserSessionManager.shared)
     }
 }

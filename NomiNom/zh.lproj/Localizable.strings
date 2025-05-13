@@ -15,4 +15,53 @@
 "notifications_order_title" = "订单更新";
 "notifications_order_description" = "您的订单 #12345 正在配送中！";
 "notifications_system_title" = "新功能";
-"notifications_system_description" = "查看我们的新团购功能！"; 
+"notifications_system_description" = "查看我们的新团购功能！";
+
+/* Sign In */
+"sign_in_header" = "登录或创建账户";
+"continue_with_google" = "使用谷歌账号继续";
+"continue_with_apple" = "使用苹果账号继续";
+"continue_with_facebook" = "使用脸书账号继续";
+"or" = "或";
+"email_sign_in_header" = "或使用邮箱登录";
+"email_sign_in_subheader" = "如果您已有账户，请使用您的 Grubhub 或 Seamless 邮箱";
+"email_placeholder" = "邮箱";
+"continue" = "继续";
+
+/* Home */
+"select_location" = "选择位置";
+"featured_restaurants" = "精选餐厅";
+"popular_categories" = "热门分类";
+"recent_orders" = "最近订单";
+"reorder" = "再次订购";
+
+/* Offers */
+"offers" = "优惠";
+"active_offers" = "当前优惠";
+"expiring_soon" = "即将过期";
+"expires_in_24h" = "24小时内过期";
+"use_offer" = "使用优惠";
+
+/* Browse */
+"browse" = "浏览";
+"search_restaurants" = "搜索餐厅";
+"pizza" = "披萨";
+"burgers" = "汉堡";
+"sushi" = "寿司";
+"chinese" = "中餐";
+"mexican" = "墨西哥餐";
+"italian" = "意大利餐";
+"indian" = "印度餐";
+"thai" = "泰餐";
+"vietnamese" = "越南餐";
+"desserts" = "甜点";
+
+/* Orders */
+"orders" = "订单";
+"active_orders" = "进行中订单";
+"past_orders" = "历史订单";
+"preparing" = "准备中";
+"estimated_delivery" = "预计送达";
+"contact_restaurant" = "联系餐厅";
+"track_order" = "追踪订单";
+"delivered" = "已送达"; 
