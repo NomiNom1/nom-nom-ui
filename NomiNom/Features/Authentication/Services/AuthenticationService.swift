@@ -34,7 +34,8 @@ class AuthenticationService: AuthenticationServiceProtocol {
                 "firstName": firstName,
                 "lastName": lastName,
                 "email": email,
-                "phone": phoneNumber
+                "phone": phoneNumber,
+                "countryCode": countryCode
             ]
         )
         

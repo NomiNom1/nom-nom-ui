@@ -3,14 +3,20 @@ import AppTrackingTransparency
 import AuthenticationServices
 
 struct SignInView: View {
-    @StateObject private var viewModel = AuthenticationViewModel()
     @StateObject private var coordinator = AuthenticationCoordinator()
+    @StateObject private var viewModel: AuthenticationViewModel
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var userSessionManager: UserSessionManager
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var languageManager: LanguageManager
     @State private var navigateToMain = false
     @State private var showPhoneVerification = false
+    
+    init() {
+        let coordinator = AuthenticationCoordinator()
+        _coordinator = StateObject(wrappedValue: coordinator)
+        _viewModel = StateObject(wrappedValue: AuthenticationViewModel(coordinator: coordinator))
+    }
     
     var body: some View {
         NavigationStack {

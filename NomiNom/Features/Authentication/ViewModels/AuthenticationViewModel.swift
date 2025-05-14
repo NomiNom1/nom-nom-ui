@@ -14,18 +14,19 @@ final class AuthenticationViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var showPhoneVerification = false
-    @StateObject private var coordinator = AuthenticationCoordinator()
-
     
     private let authService: AuthenticationServiceProtocol
     private let userSessionManager: UserSessionManager
+    private let coordinator: AuthenticationCoordinator
     
     init(
         authService: AuthenticationServiceProtocol = AuthenticationService(),
-        userSessionManager: UserSessionManager = .shared
+        userSessionManager: UserSessionManager = .shared,
+        coordinator: AuthenticationCoordinator
     ) {
         self.authService = authService
         self.userSessionManager = userSessionManager
+        self.coordinator = coordinator
     }
     
     func signIn() async {
@@ -52,18 +53,15 @@ final class AuthenticationViewModel: ObservableObject {
         isLoading = true
         do {
             // Send verification code
-            print("attempting to sign up")
             let user = try await authService.signUp(
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
                     phoneNumber: phoneNumber,
-                    countryCode: "+1" // TODO: Make this dynamic based on country code
+                    countryCode: selectedCountryCode.country // TODO: Make this dynamic based on country code
                 )
-            print("User signed up: \(user)")
 
             try await userSessionManager.signIn(userId: user.id)
-            print("User signed in: \(user)")
             coordinator.navigateToMain = true
             // _ = try await authService.sendVerificationCode(to: phoneNumber)
             // showPhoneVerification = true

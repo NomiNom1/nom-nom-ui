@@ -31,6 +31,7 @@ struct User: Codable {
     let lastName: String
     let email: String
     let phone: String
+    let countryCode: String
     let orderHistory: [String]
     let deliveryAddresses: [DeliveryAddress]
     let paymentMethods: [String]
@@ -43,6 +44,7 @@ struct User: Codable {
         case lastName
         case email
         case phone
+        case countryCode
         case orderHistory
         case deliveryAddresses
         case paymentMethods
