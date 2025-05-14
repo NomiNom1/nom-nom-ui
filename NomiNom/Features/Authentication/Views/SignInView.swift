@@ -4,6 +4,7 @@ import AuthenticationServices
 
 struct SignInView: View {
     @StateObject private var viewModel = AuthenticationViewModel()
+    @StateObject private var coordinator = AuthenticationCoordinator()
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var userSessionManager: UserSessionManager
     @EnvironmentObject private var themeManager: ThemeManager
@@ -122,7 +123,7 @@ struct SignInView: View {
                     
                 }
             }
-            .fullScreenCover(isPresented: $navigateToMain) {
+            .fullScreenCover(isPresented: $coordinator.navigateToMain) {
                 MainTabView()
             }
             .sheet(isPresented: $showPhoneVerification) {
@@ -259,6 +260,9 @@ struct SignInView: View {
             .foregroundColor(.white)
             .cornerRadius(10)
             .padding(.top, 16)
+        }
+        .fullScreenCover(isPresented: $coordinator.navigateToMain) {
+            MainTabView()
         }
         .padding(.horizontal)
     }

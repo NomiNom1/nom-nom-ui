@@ -9,11 +9,13 @@ final class AuthenticationViewModel: ObservableObject {
     @Published var firstName = ""
     @Published var lastName = ""
     @Published var phoneNumber = ""
-    @Published var selectedCountryCode = CountryCode(code: "+1", country: "US")
+    @Published var selectedCountryCode: CountryCode = CountryCode(code: "+1", country: "US")
     @Published var isLoading = false
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var showPhoneVerification = false
+    @StateObject private var coordinator = AuthenticationCoordinator()
+
     
     private let authService: AuthenticationServiceProtocol
     private let userSessionManager: UserSessionManager
@@ -50,8 +52,21 @@ final class AuthenticationViewModel: ObservableObject {
         isLoading = true
         do {
             // Send verification code
-            _ = try await authService.sendVerificationCode(to: phoneNumber)
-            showPhoneVerification = true
+            print("attempting to sign up")
+            let user = try await authService.signUp(
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    phoneNumber: phoneNumber,
+                    countryCode: "+1" // TODO: Make this dynamic based on country code
+                )
+            print("User signed up: \(user)")
+
+            try await userSessionManager.signIn(userId: user.id)
+            print("User signed in: \(user)")
+            coordinator.navigateToMain = true
+            // _ = try await authService.sendVerificationCode(to: phoneNumber)
+            // showPhoneVerification = true
         } catch {
             showError = true
             errorMessage = error.localizedDescription

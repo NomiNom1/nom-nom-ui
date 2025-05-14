@@ -57,7 +57,6 @@ final class PhoneVerificationViewModel: ObservableObject {
                     phoneNumber: phoneNumber,
                     countryCode: "+1" // TODO: Make this dynamic based on country code
                 )
-                
                 // Sign in the user
                 try await userSessionManager.signIn(userId: user.id)
             } else {
