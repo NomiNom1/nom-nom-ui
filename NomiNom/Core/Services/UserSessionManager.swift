@@ -96,7 +96,7 @@ final class UserSessionManager: ObservableObject {
         currentUser?.orderHistory
     }
     
-    var userDeliveryAddresses: [String]? {
+    var userDeliveryAddresses: [DeliveryAddress]? {
         currentUser?.deliveryAddresses
     }
     
