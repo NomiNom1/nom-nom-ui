@@ -30,21 +30,23 @@ final class AuthenticationViewModel: ObservableObject {
     }
     
     func signIn() async {
-        guard !email.isEmpty, !password.isEmpty else {
-            showError = true
-            errorMessage = "Please fill in all fields"
-            return
-        }
+        coordinator.navigateToMain = true
+         try await authService.signIn(email: email, password: password)
+        // guard !email.isEmpty, !password.isEmpty else {
+        //     showError = true
+        //     errorMessage = "Please fill in all fields"
+        //     return
+        // }
         
-        isLoading = true
-        do {
-            let userId = try await authService.signIn(email: email, password: password)
-            try await userSessionManager.signIn(userId: userId)
-        } catch {
-            showError = true
-            errorMessage = error.localizedDescription
-        }
-        isLoading = false
+        // isLoading = true
+        // do {
+        //     let userId = try await authService.signIn(email: email, password: password)
+        //     try await userSessionManager.signIn(userId: userId)
+        // } catch {
+        //     showError = true
+        //     errorMessage = error.localizedDescription
+        // }
+        // isLoading = false
     }
     
     func startSignUp() async {

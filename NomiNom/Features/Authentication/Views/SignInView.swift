@@ -160,17 +160,32 @@ struct SignInView: View {
                 .font(.subheadline)
                 .foregroundColor(themeManager.currentTheme.textSecondary)
             
-            TextField("email_placeholder".localized, text: $viewModel.email)
-                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
-                .textContentType(.emailAddress)
-                .keyboardType(.emailAddress)
-                .autocapitalization(.none)
-                .padding(.top, 8)
-            
-            SecureField("password_placeholder".localized, text: $viewModel.password)
-                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
-                .textContentType(.password)
-                .padding(.top, 8)
+            HStack(spacing: 8) {
+                Menu {
+                    ForEach(CountryCode.availableCodes) { countryCode in
+                        Button(countryCode.displayText) {
+                            viewModel.selectedCountryCode = countryCode
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text(viewModel.selectedCountryCode.displayText)
+                            .foregroundColor(themeManager.currentTheme.textPrimary)
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(themeManager.currentTheme.textPrimary)
+                    }
+                    .padding()
+                    .frame(width: 120)
+                    .background(themeManager.currentTheme.surface)
+                    .cornerRadius(10)
+                }
+                
+                TextField("phone_placeholder".localized, text: $viewModel.phoneNumber)
+                    .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                    .textContentType(.telephoneNumber)
+                    .keyboardType(.phonePad)
+            }
+            .padding(.top, 8)
             
             Button(action: {
                 Task {
