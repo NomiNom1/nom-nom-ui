@@ -1,20 +1,20 @@
 import SwiftUI
 
 struct HomeView: View {
-    @State private var showLocationSelector = false
     @State private var showNotifications = false
+    @StateObject private var coordinator = HomeCoordinator()
     @StateObject private var locationManager = LocationManager()
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var languageManager: LanguageManager
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $coordinator.path) {
             VStack(spacing: 0) {
                 // Top Bar with Location and Action Icons
                 HStack {
                     // Location Selector
                     Button(action: {
-                        showLocationSelector = true
+                        coordinator.showLocationSelector = true
                     }) {
                         HStack(spacing: 4) {
                             Image(systemName: "location.fill")
@@ -115,7 +115,7 @@ struct HomeView: View {
                 .background(themeManager.currentTheme.background)
             }
             .navigationBarHidden(true)
-            .sheet(isPresented: $showLocationSelector) {
+            .sheet(isPresented: $coordinator.showLocationSelector) {
                 LocationSelectorView()
             }
         }
