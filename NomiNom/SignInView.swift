@@ -9,9 +9,9 @@ struct SignInView: View {
     @State private var errorMessage = ""
     @State private var isLoading = false
     @State private var isEmailValid = false
-    @Environment(\.dismiss) private var dismiss
-    // @StateObject private var authService = AuthenticationService.shared
     @State private var navigateToMain = false
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var userSessionManager: UserSessionManager
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var languageManager: LanguageManager
     
@@ -90,7 +90,9 @@ struct SignInView: View {
                                 .padding(.top, 8)
                             
                             Button(action: {
-                                navigateToMain = true
+                                Task {
+                                    await handleEmailSignIn()
+                                }
                             }) {
                                 if isLoading {
                                     ProgressView()
@@ -105,7 +107,7 @@ struct SignInView: View {
                             .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
                             .foregroundColor(.white)
                             .cornerRadius(10)
-//                            .disabled(!isEmailValid || isLoading)
+                            // .disabled(!isEmailValid || isLoading)
                             .padding(.top, 16)
                         }
                         .padding(.horizontal)
@@ -128,15 +130,35 @@ struct SignInView: View {
                 MainTabView()
             }
         }
-        //         .onAppear {
-        //             ATTTrackingDialougue()
-        //         }
+        .alert("Error", isPresented: $showError) {
+            Button("OK") {
+                showError = false
+            }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+
+    private func handleEmailSignIn() async {
+        isLoading = true
+        do {
+            // For now, we'll use a dummy user ID. In production, this would come from your auth service
+            try await userSessionManager.signIn(userId: "6820d662bdc2a39900706b74")
+            // dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+        isLoading = false
+        navigateToMain = true
     }
 
     private func handleGoogleSignIn() async {
         do {
-            print("Google sign in")
-            // try await authService.signInWithGoogle()
+            // Implement Google Sign In
+            // After successful sign in, call:
+            // try await userSessionManager.signIn(userId: userId)
+            // dismiss()
         } catch {
             errorMessage = error.localizedDescription
             showError = true

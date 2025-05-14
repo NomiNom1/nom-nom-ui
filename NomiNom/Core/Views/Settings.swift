@@ -9,15 +9,9 @@ import SwiftUI
 
 struct SettingsView: View {
     @State private var profileImage: Image = Image(systemName: "person.circle.fill")
-    @State private var user: User?
     @State private var isLoading = false
     @State private var errorMessage: String?
-    
-    private let userService: UserServiceProtocol
-    
-    init(userService: UserServiceProtocol = UserService()) {
-        self.userService = userService
-    }
+    @EnvironmentObject private var userSessionManager: UserSessionManager
     
     var body: some View {
         NavigationView {
@@ -39,7 +33,7 @@ struct SettingsView: View {
                                 .clipShape(Circle())
                                 .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
                             VStack (alignment: .leading) {
-                                if let user = user {
+                                if let user = userSessionManager.currentUser {
                                     Text("\(user.firstName) \(user.lastName)")
                                         .font(.headline)
                                         .foregroundColor(.primary)
@@ -121,7 +115,7 @@ struct SettingsView: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .task {
-                await loadUserData()
+                await refreshUserData()
             }
             .alert("Error", isPresented: .constant(errorMessage != nil)) {
                 Button("OK") {
@@ -133,12 +127,11 @@ struct SettingsView: View {
         }
     }
     
-    private func loadUserData() async {
+    private func refreshUserData() async {
         isLoading = true
         do {
-            user = try await userService.fetchUser(id: "6820d662bdc2a39900706b74")
+            try await userSessionManager.refreshUserData()
         } catch {
-            print(error)
             errorMessage = error.localizedDescription
         }
         isLoading = false
