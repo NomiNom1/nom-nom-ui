@@ -12,13 +12,19 @@ final class UserSessionManager: ObservableObject {
     
     @Published private(set) var sessionState: UserSessionState = .signedOut
     @Published private(set) var currentUser: User?
+    @Published private(set) var lastRefreshTime: Date?
     
     private let userService: UserServiceProtocol
+    private let userDefaults: UserDefaults
     private var cancellables = Set<AnyCancellable>()
+    private let refreshInterval: TimeInterval = 300 // 5 minutes
+    private let cacheKey = "cachedUserData"
     
-    private init(userService: UserServiceProtocol = UserService()) {
+    private init(userService: UserServiceProtocol = UserService(), userDefaults: UserDefaults = .standard) {
         self.userService = userService
+        self.userDefaults = userDefaults
         setupSessionStateObserver()
+        loadCachedUserData()
     }
     
     private func setupSessionStateObserver() {
@@ -33,6 +39,22 @@ final class UserSessionManager: ObservableObject {
             .store(in: &cancellables)
     }
     
+    private func loadCachedUserData() {
+        if let data = userDefaults.data(forKey: cacheKey),
+           let user = try? JSONDecoder().decode(User.self, from: data) {
+            self.sessionState = .signedIn(user)
+            self.lastRefreshTime = userDefaults.object(forKey: "lastRefreshTime") as? Date
+        }
+    }
+    
+    private func cacheUserData(_ user: User) {
+        if let data = try? JSONEncoder().encode(user) {
+            userDefaults.set(data, forKey: cacheKey)
+            userDefaults.set(Date(), forKey: "lastRefreshTime")
+            self.lastRefreshTime = Date()
+        }
+    }
+    
     // MARK: - Public Methods
     
     func signIn(userId: String) async throws {
@@ -41,10 +63,13 @@ final class UserSessionManager: ObservableObject {
             let user = try await userService.fetchUser(id: userId)
             await MainActor.run {
                 self.sessionState = .signedIn(user)
+                self.cacheUserData(user)
             }
         } catch {
             await MainActor.run {
                 self.sessionState = .signedOut
+                self.userDefaults.removeObject(forKey: cacheKey)
+                self.userDefaults.removeObject(forKey: "lastRefreshTime")
             }
             throw error
         }
@@ -53,14 +78,24 @@ final class UserSessionManager: ObservableObject {
     func signOut() {
         sessionState = .signedOut
         currentUser = nil
+        userDefaults.removeObject(forKey: cacheKey)
+        userDefaults.removeObject(forKey: "lastRefreshTime")
     }
     
     func refreshUserData() async throws {
         guard case .signedIn(let user) = sessionState else { return }
+        
+        // Check if we need to refresh based on time interval
+        if let lastRefresh = lastRefreshTime,
+           Date().timeIntervalSince(lastRefresh) < refreshInterval {
+            return // Use cached data if within refresh interval
+        }
+        
         do {
             let updatedUser = try await userService.fetchUser(id: user.id)
             await MainActor.run {
                 self.sessionState = .signedIn(updatedUser)
+                self.cacheUserData(updatedUser)
             }
         } catch {
             throw error
@@ -96,11 +131,21 @@ final class UserSessionManager: ObservableObject {
         currentUser?.orderHistory
     }
     
-    var userDeliveryAddresses: [String]? {
+    var userDeliveryAddresses: [DeliveryAddress]? {
         currentUser?.deliveryAddresses
     }
     
     var userPaymentMethods: [String]? {
         currentUser?.paymentMethods
+    }
+    
+    // MARK: - User Preferences
+    
+    func updateUserPreferences(_ preferences: [String: Any]) async throws {
+        guard case .signedIn(let user) = sessionState else { return }
+        // Implement user preferences update
+        // This would typically make an API call to update user preferences
+        // For now, we'll just refresh the user data
+        try await refreshUserData()
     }
 } 

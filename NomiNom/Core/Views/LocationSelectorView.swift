@@ -4,7 +4,14 @@ import CoreLocation
 struct LocationSelectorView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var locationManager = LocationManager()
+    @StateObject private var userSessionManager = UserSessionManager.shared
     @State private var searchText = ""
+    
+    // Sample nearby addresses
+    private let nearbyAddresses = [
+        (street: "123 Main Street", city: "San Francisco, CA 94105, USA"),
+        (street: "456 Market Street", city: "San Francisco, CA 94103, USA")
+    ]
     
     var body: some View {
         NavigationView {
@@ -116,28 +123,82 @@ struct LocationSelectorView: View {
                     .padding()
                 }
                 
-                // Current address if available
-                if !locationManager.address.isEmpty {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Current Location")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .padding(.horizontal)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+                        // Current Location Section
+                        if !locationManager.address.isEmpty {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Current Location")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                
+                                Text(locationManager.address)
+                                    .font(.body)
+                            }
+                        }
                         
-                        Text(locationManager.address)
-                            .font(.body)
-                            .padding(.horizontal)
+                        // Nearby Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Nearby")
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            
+                            ForEach(nearbyAddresses, id: \.street) { address in
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(address.street)
+                                        .font(.body)
+                                    Text(address.city)
+                                        .font(.subheadline)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 8)
+                            }
+                        }
+                        
+                        // Saved Addresses Section
+                        if let savedAddresses = userSessionManager.userDeliveryAddresses {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Saved Addresses")
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                
+                                ForEach(savedAddresses, id: \.id) { address in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(address.street)
+                                            .font(.body)
+                                        Text("\(address.city), \(address.state) \(address.zipCode)")
+                                            .font(.subheadline)
+                                            .foregroundColor(.gray)
+                                    }
+                                    .padding(.vertical, 8)
+                                }
+                            }
+                        }
+
+                        Button(action: {
+                            Task {
+                                await debug()
+                            }
+                        }) {
+                            Text("Debug")
+                                .font(.headline)
+                        }
                     }
-                    .padding(.top)
+                    .padding(.horizontal)
                 }
-                
-                Spacer()
             }
             .navigationBarHidden(true)
         }
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackgroundInteraction(.enabled)
+    }
+
+
+    private func debug() async {
+        print("userSessionManager.userDeliveryAddresses: \(userSessionManager)")
+        print("userSessionManager.userDeliveryAddresses: \(userSessionManager.userDeliveryAddresses)")
+        print("first name: \(userSessionManager.userFirstName)")
     }
 }
 

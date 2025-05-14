@@ -1,5 +1,30 @@
 import Foundation
 
+struct Location: Codable {
+    let type: String
+    let coordinates: [Double]
+}
+
+struct DeliveryAddress: Codable {
+    let location: Location
+    let street: String
+    let city: String
+    let state: String
+    let zipCode: String
+    let isDefault: Bool
+    let id: String
+
+    enum CodingKeys: String, CodingKey {
+        case location
+        case street
+        case city
+        case state
+        case zipCode
+        case isDefault
+        case id = "_id"
+    }
+}
+
 struct User: Codable {
     let id: String
     let firstName: String
@@ -7,7 +32,7 @@ struct User: Codable {
     let email: String
     let phone: String
     let orderHistory: [String]
-    let deliveryAddresses: [String]
+    let deliveryAddresses: [DeliveryAddress]
     let paymentMethods: [String]
     let createdAt: String
     let updatedAt: String
