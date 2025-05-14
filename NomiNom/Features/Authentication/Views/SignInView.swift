@@ -3,116 +3,110 @@ import AppTrackingTransparency
 import AuthenticationServices
 
 struct SignInView: View {
-    @State private var email = ""
-    @State private var password = ""
-    @State private var showError = false
-    @State private var errorMessage = ""
-    @State private var isLoading = false
-    @State private var isEmailValid = false
-    @State private var navigateToMain = false
+    @StateObject private var viewModel = AuthenticationViewModel()
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var userSessionManager: UserSessionManager
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var languageManager: LanguageManager
+    @State private var navigateToMain = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // Full screen background
                 themeManager.currentTheme.background
                     .ignoresSafeArea()
                 
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header
-                        Text("sign_in_header".localized)
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(themeManager.currentTheme.textPrimary)
-                            .padding(.top, 16)
-                        
-                        // Social Sign-in Buttons
-                        VStack(spacing: 12) {
-                            SocialSignInButton(
-                                title: "continue_with_google".localized,
-                                icon: "g.circle.fill",
-                                action: { Task { await handleGoogleSignIn() }}
-                            )
-                            .environmentObject(themeManager)
-                            
-                            SocialSignInButton(
-                                title: "continue_with_apple".localized,
-                                icon: "apple.logo",
-                                action: { Task { await handleAppleSignIn() }}
-                            )
-                            .environmentObject(themeManager)
-                            
-                            SocialSignInButton(
-                                title: "continue_with_facebook".localized,
-                                icon: "f.circle.fill",
-                                action: { Task { await handleFacebookSignIn() }}
-                            )
-                            .environmentObject(themeManager)
-                        }
-                        .padding(.horizontal)
-                        
-                        // Divider
-                        HStack {
-                            Rectangle()
-                                .frame(height: 1)
-                                .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
-                            Text("or".localized)
-                                .foregroundColor(themeManager.currentTheme.textTertiary)
-                            Rectangle()
-                                .frame(height: 1)
-                                .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
-                        }
-                        .padding(.horizontal)
-                        
-                        // Email Section
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("email_sign_in_header".localized)
-                                .font(.headline)
-                                .foregroundColor(themeManager.currentTheme.textPrimary)
-                            
-                            Text("email_sign_in_subheader".localized)
-                                .font(.subheadline)
-                                .foregroundColor(themeManager.currentTheme.textSecondary)
-                            
-                            TextField("email_placeholder".localized, text: $email)
-                                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
-                                .textContentType(.emailAddress)
-                                .keyboardType(.emailAddress)
-                                .autocapitalization(.none)
-                                .onChange(of: email) { newValue in
-                                    isEmailValid = isValidEmail(newValue)
-                                }
-                                .padding(.top, 8)
-                            
-                            Button(action: {
-                                Task {
-                                    await handleEmailSignIn()
-                                }
-                            }) {
-                                if isLoading {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                } else {
-                                    Text("continue".localized)
+                VStack(spacing: 0) {
+                    // Tab Buttons
+                    HStack {
+                        ZStack(alignment: viewModel.isSignIn ? .leading : .trailing) {
+                            RoundedRectangle(cornerRadius: 24)
+                                .fill(themeManager.currentTheme.surface)
+                                .frame(height: 44)
+
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(themeManager.currentTheme.buttonPrimary)
+                                .frame(width: UIScreen.main.bounds.width / 2 - 32, height: 36)
+                                .padding(4)
+                                .animation(.easeInOut(duration: 0.25), value: viewModel.isSignIn)
+
+                            HStack(spacing: 0) {
+                                Button(action: { viewModel.isSignIn = true }) {
+                                    Text("Sign In")
                                         .font(.headline)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .foregroundColor(viewModel.isSignIn ? .white : themeManager.currentTheme.textSecondary)
+                                }
+
+                                Button(action: { viewModel.isSignIn = false }) {
+                                    Text("Sign Up")
+                                        .font(.headline)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                        .foregroundColor(!viewModel.isSignIn ? .white : themeManager.currentTheme.textSecondary)
                                 }
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(isEmailValid ? themeManager.currentTheme.buttonPrimary : themeManager.currentTheme.buttonDisabled)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            // .disabled(!isEmailValid || isLoading)
-                            .padding(.top, 16)
+                            .frame(height: 44)
                         }
+                        .clipShape(RoundedRectangle(cornerRadius: 24))
                         .padding(.horizontal)
                     }
-                    .padding(.bottom, 32)
+                    .padding(.horizontal)
+                    
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            // Header
+                            Text(viewModel.isSignIn ? "sign_in_header".localized : "sign_up_header".localized)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                                .foregroundColor(themeManager.currentTheme.textPrimary)
+                                .padding(.top, 16)
+                            
+                            // Social Sign-in Buttons
+                            VStack(spacing: 12) {
+                                SocialSignInButton(
+                                    title: "continue_with_google".localized,
+                                    icon: "g.circle.fill",
+                                    action: { Task { await viewModel.signInWithGoogle() }}
+                                )
+                                .environmentObject(themeManager)
+                                
+                                SocialSignInButton(
+                                    title: "continue_with_apple".localized,
+                                    icon: "apple.logo",
+                                    action: { Task { await viewModel.signInWithApple() }}
+                                )
+                                .environmentObject(themeManager)
+                                
+                                SocialSignInButton(
+                                    title: "continue_with_facebook".localized,
+                                    icon: "f.circle.fill",
+                                    action: { Task { await viewModel.signInWithFacebook() }}
+                                )
+                                .environmentObject(themeManager)
+                            }
+                            .padding(.horizontal)
+                            
+                            // Divider
+                            HStack {
+                                Rectangle()
+                                    .frame(height: 1)
+                                    .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
+                                Text("or".localized)
+                                    .foregroundColor(themeManager.currentTheme.textTertiary)
+                                Rectangle()
+                                    .frame(height: 1)
+                                    .foregroundColor(themeManager.currentTheme.textTertiary.opacity(0.3))
+                            }
+                            .padding(.horizontal)
+                            
+                            if viewModel.isSignIn {
+                                signInForm
+                            } else {
+                                signUpForm
+                            }
+                        }
+                        .padding(.bottom, 32)
+                    }
                 }
             }
             .navigationBarBackButtonHidden(true)
@@ -124,59 +118,165 @@ struct SignInView: View {
                         Image(systemName: "chevron.left")
                             .foregroundColor(themeManager.currentTheme.buttonPrimary)
                     }
+                    
                 }
             }
             .fullScreenCover(isPresented: $navigateToMain) {
                 MainTabView()
             }
         }
-        .alert("Error", isPresented: $showError) {
+        .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {
-                showError = false
+                viewModel.showError = false
             }
         } message: {
-            Text(errorMessage)
-        }
-    }
-
-    private func handleEmailSignIn() async {
-        isLoading = true
-        do {
-            // For now, we'll use a dummy user ID. In production, this would come from your auth service
-            try await userSessionManager.signIn(userId: "6820d662bdc2a39900706b74")
-            // dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
-            showError = true
-        }
-        isLoading = false
-        navigateToMain = true
-    }
-
-    private func handleGoogleSignIn() async {
-        do {
-            // Implement Google Sign In
-            // After successful sign in, call:
-            // try await userSessionManager.signIn(userId: userId)
-            // dismiss()
-        } catch {
-            errorMessage = error.localizedDescription
-            showError = true
+            Text(viewModel.errorMessage)
         }
     }
     
-    private func handleAppleSignIn() async {
-        // Implement Apple Sign In
+    private var signInForm: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("email_sign_in_header".localized)
+                .font(.headline)
+                .foregroundColor(themeManager.currentTheme.textPrimary)
+            
+            Text("email_sign_in_subheader".localized)
+                .font(.subheadline)
+                .foregroundColor(themeManager.currentTheme.textSecondary)
+            
+            TextField("email_placeholder".localized, text: $viewModel.email)
+                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                .textContentType(.emailAddress)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+                .padding(.top, 8)
+            
+            SecureField("password_placeholder".localized, text: $viewModel.password)
+                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                .textContentType(.password)
+                .padding(.top, 8)
+            
+            Button(action: {
+                Task {
+                    await viewModel.signIn()
+                }
+            }) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("sign_in".localized)
+                        .font(.headline)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(themeManager.currentTheme.buttonPrimary)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .padding(.top, 16)
+        }
+        .padding(.horizontal)
     }
     
-    private func handleFacebookSignIn() async {
-        // Implement Facebook Sign In
+    private var signUpForm: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("create_account".localized)
+                .font(.headline)
+                .foregroundColor(themeManager.currentTheme.textPrimary)
+            
+            TextField("first_name_placeholder".localized, text: $viewModel.firstName)
+                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                .textContentType(.givenName)
+                .autocapitalization(.words)
+                .padding(.top, 8)
+            
+            TextField("last_name_placeholder".localized, text: $viewModel.lastName)
+                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                .textContentType(.familyName)
+                .autocapitalization(.words)
+                .padding(.top, 8)
+            
+            TextField("email_placeholder".localized, text: $viewModel.email)
+                .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                .textContentType(.emailAddress)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+                .padding(.top, 8)
+            
+            HStack(spacing: 8) {
+                Menu {
+                    ForEach(CountryCode.availableCodes) { countryCode in
+                        Button(countryCode.displayText) {
+                            viewModel.selectedCountryCode = countryCode
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text(viewModel.selectedCountryCode.displayText)
+                            .foregroundColor(themeManager.currentTheme.textPrimary)
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(themeManager.currentTheme.textPrimary)
+                    }
+                    .padding()
+                    .frame(width: 120)
+                    .background(themeManager.currentTheme.surface)
+                    .cornerRadius(10)
+                }
+                
+                TextField("phone_placeholder".localized, text: $viewModel.phoneNumber)
+                    .textFieldStyle(CustomTextFieldStyle(theme: themeManager.currentTheme))
+                    .textContentType(.telephoneNumber)
+                    .keyboardType(.phonePad)
+            }
+            .padding(.top, 8)
+            
+            Button(action: {
+                Task {
+                    await viewModel.signUp()
+                }
+            }) {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("sign_up".localized)
+                        .font(.headline)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(themeManager.currentTheme.buttonPrimary)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            .padding(.top, 16)
+        }
+        .padding(.horizontal)
     }
+}
 
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
+struct TabButton: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    @EnvironmentObject private var themeManager: ThemeManager
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(isSelected ? .white : themeManager.currentTheme.textSecondary)
+                .padding(.vertical, 12)
+                .padding(.horizontal, 24) // 宽一点，比圆形略宽
+                .background(
+                    Capsule()
+                        .fill(isSelected ? themeManager.currentTheme.buttonPrimary : Color.clear)
+                        .overlay(
+                            Capsule()
+                                .stroke(themeManager.currentTheme.textTertiary.opacity(0.3), lineWidth: 1)
+                        )
+                )
+        }
     }
 }
 
