@@ -10,13 +10,13 @@ struct OrdersView: View {
             VStack(spacing: 0) {
                 // Tab Selector
                 HStack {
-                    TabButton(
+                    OrdersTabButton(
                         title: "active_orders".localized,
                         isSelected: selectedTab == 0,
                         action: { selectedTab = 0 }
                     )
                     
-                    TabButton(
+                    OrdersTabButton(
                         title: "past_orders".localized,
                         isSelected: selectedTab == 1,
                         action: { selectedTab = 1 }
@@ -49,7 +49,7 @@ struct OrdersView: View {
     }
 }
 
-struct TabButton: View {
+struct OrdersTabButton: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
