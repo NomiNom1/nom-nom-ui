@@ -9,6 +9,7 @@ struct SignInView: View {
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var languageManager: LanguageManager
     @State private var navigateToMain = false
+    @State private var showPhoneVerification = false
     
     var body: some View {
         NavigationStack {
@@ -124,6 +125,14 @@ struct SignInView: View {
             .fullScreenCover(isPresented: $navigateToMain) {
                 MainTabView()
             }
+            .sheet(isPresented: $showPhoneVerification) {
+                PhoneVerificationView(
+                    phoneNumber: viewModel.phoneNumber,
+                    firstName: viewModel.firstName,
+                    lastName: viewModel.lastName,
+                    email: viewModel.email
+                )
+            }
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {
@@ -233,7 +242,7 @@ struct SignInView: View {
             
             Button(action: {
                 Task {
-                    await viewModel.signUp()
+                    await viewModel.startSignUp()
                 }
             }) {
                 if viewModel.isLoading {
