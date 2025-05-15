@@ -24,9 +24,9 @@ class AuthenticationService: AuthenticationServiceProtocol {
         // TODO: Implement actual authentication logic
 
         let endpoint = APIEndpoint(
-            path: "/users/phone",
-            method: .post,
-            headers: ["Content-Type": "application/json"],
+            path: "/users/phone?phone=\(countryCode)\(phoneNumber)&countryCode=\(countryCode)",
+            method: .get,
+            headers: ["Content-Type": "application/json"]
         )
         
         return try await apiClient.request(endpoint)
