@@ -16,6 +16,7 @@ protocol APIClientProtocol {
 final class APIClient: APIClientProtocol {
     static let shared = APIClient()
     private let baseURL = "http://localhost:3000/api"
+//    private let baseURL = "https://nom-nom-api-kkrd.onrender.com/api" // deployed
     private let session: URLSession
     private let decoder: JSONDecoder
     
