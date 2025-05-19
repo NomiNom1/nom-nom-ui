@@ -30,6 +30,8 @@ struct LocationSelectorView: View {
                         .font(.headline)
                     
                     Spacer()
+                    
+                    Text(" ")
                 }
                 .padding(.horizontal)
                 .padding(.top, 32)
@@ -91,15 +93,13 @@ struct LocationSelectorView: View {
                         VStack(alignment: .leading, spacing: 24) {
                             // Home and Work Tiles
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 16) {
-                                    // Home Tile
+                                HStack() {
                                     VStack(alignment: .leading) {
-                                        HStack(spacing: 8) {
+                                        HStack() {
                                             Image(systemName: "house.fill")
                                                 .font(.system(size: 20))
                                                 .foregroundColor(.blue)
-                                            
-                                            VStack(alignment: .leading, spacing: 2) {
+                                            VStack(alignment: .leading) {
                                                 Text("Home")
                                                     .font(.headline)
                                                 Text("Set Address")
@@ -107,26 +107,20 @@ struct LocationSelectorView: View {
                                                     .foregroundColor(.gray)
                                             }
                                         }
-                                        .padding(.top, 4)
-                                        .padding(.bottom, 4)
-                                        .padding(.trailing, 0)
+                                        
                                     }
-                                    .frame(width: 150)
-                                    
                                     // Divider
                                     Rectangle()
                                         .fill(Color(.systemGray4))
-                                        .frame(width: 1, height: 50)
-                                        .padding(.horizontal, 8)
+                                        .frame(width: 1, height: 30)
+                                        .padding(.leading, 20)
                                     
-                                    // Work Tile
                                     VStack(alignment: .leading) {
-                                        HStack(spacing: 8) {
+                                        HStack() {
                                             Image(systemName: "briefcase.fill")
                                                 .font(.system(size: 20))
                                                 .foregroundColor(.blue)
-                                            
-                                            VStack(alignment: .leading, spacing: 2) {
+                                            VStack(alignment: .leading) {
                                                 Text("Work")
                                                     .font(.headline)
                                                 Text("Set Address")
@@ -134,13 +128,9 @@ struct LocationSelectorView: View {
                                                     .foregroundColor(.gray)
                                             }
                                         }
-                                        .padding(.top, 4)
-                                        .padding(.bottom, 4)
-                                        .padding(.trailing, 12)
+                                        
                                     }
-                                    .frame(width: 180)
                                 }
-                                .padding(.horizontal)
                             }
                             .padding(.top, 16)
                             
@@ -155,7 +145,6 @@ struct LocationSelectorView: View {
                                         .foregroundColor(.primary)
                                     Spacer()
                                 }
-                                .padding()
                             }
                             
                             // Current Location Section
