@@ -41,11 +41,16 @@ final class LocationSearchService: LocationSearchServiceProtocol {
     
     func searchLocations(query: String) async throws -> [LocationPrediction] {
         let endpoint = APIEndpoint(
-            path: "location/search",
-            queryItems: [URLQueryItem(name: "query", value: query)]
+            path: "/location/search?query=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")",
+            method: .get,
+            headers: [
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            ]
         )
+        print("calling with endpoint: \(endpoint)")
         
-        let response: LocationSearchResponse = try await apiClient.request(endpoint: endpoint)
+        let response: LocationSearchResponse = try await apiClient.request(endpoint)
         return response.predictions
     }
 } 
