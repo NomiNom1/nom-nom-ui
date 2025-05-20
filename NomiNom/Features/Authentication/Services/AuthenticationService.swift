@@ -1,7 +1,7 @@
 import Foundation
 
 protocol AuthenticationServiceProtocol {
-    func signIn(phoneNumber: String, countryCode: String) async throws -> String
+    func signIn(phoneNumber: String, countryCode: String) async throws -> User
     func signUp(firstName: String, lastName: String, email: String, phoneNumber: String, countryCode: String) async throws -> User
     func signInWithGoogle() async throws -> String
     func signInWithApple() async throws -> String
@@ -20,9 +20,7 @@ class AuthenticationService: AuthenticationServiceProtocol {
         self.twilioService = twilioService
     }
     
-    func signIn(phoneNumber: String, countryCode: String) async throws -> String {
-        // TODO: Implement actual authentication logic
-
+    func signIn(phoneNumber: String, countryCode: String) async throws -> User {
         let endpoint = APIEndpoint(
             path: "/users/phone?phone=\(countryCode)\(phoneNumber)&countryCode=\(countryCode)",
             method: .get,

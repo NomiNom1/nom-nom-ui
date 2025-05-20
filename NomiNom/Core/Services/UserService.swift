@@ -76,6 +76,7 @@ struct User: Codable {
     let orderHistory: [String]
     let createdAt: String
     let updatedAt: String
+    let version: Int
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -90,6 +91,7 @@ struct User: Codable {
         case orderHistory
         case createdAt
         case updatedAt
+        case version = "__v"
     }
 }
 

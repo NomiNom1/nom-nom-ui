@@ -31,12 +31,12 @@ final class AuthenticationViewModel: ObservableObject {
     
     func signIn() async {
         do {
-            try await authService.signIn(phoneNumber: phoneNumber, countryCode: selectedCountryCode.country)
+            let user = try await authService.signIn(phoneNumber: phoneNumber, countryCode: selectedCountryCode.country)
+            try await userSessionManager.signIn(userId: user.id)
             coordinator.navigateToMain = true
         } catch {
             showError = true
             errorMessage = error.localizedDescription
-            coordinator.navigateToMain = true
         }
 
         // guard !email.isEmpty, !password.isEmpty else {
