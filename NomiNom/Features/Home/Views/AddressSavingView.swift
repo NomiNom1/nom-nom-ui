@@ -10,7 +10,7 @@ struct AddressSavingView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     // Selected Address
@@ -53,6 +53,10 @@ struct AddressSavingView: View {
                         InputField(title: "Address Label", text: $viewModel.addressLabel)
                     }
                     .padding(.horizontal)
+
+
+                    Button("Save") {
+                    }
                 }
                 .padding(.vertical)
             }
