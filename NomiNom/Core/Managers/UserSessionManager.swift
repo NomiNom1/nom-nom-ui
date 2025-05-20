@@ -199,11 +199,11 @@ final class UserSessionManager: ObservableObject {
         currentUser?.orderHistory
     }
     
-    var userDeliveryAddresses: [DeliveryAddress]? {
-        currentUser?.deliveryAddresses
+    var userAddresses: [DeliveryAddress]? {
+        currentUser?.addresses
     }
     
-    var userPaymentMethods: [String]? {
+    var userPaymentMethods: [PaymentMethod]? {
         currentUser?.paymentMethods
     }
     

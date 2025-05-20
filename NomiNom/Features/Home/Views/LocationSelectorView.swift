@@ -160,7 +160,7 @@ struct LocationSelectorView: View {
                             }
                             
                             // Saved Addresses Section
-                            if let savedAddresses = userSessionManager.userDeliveryAddresses {
+                            if let savedAddresses = userSessionManager.userAddresses {
                                 VStack(alignment: .leading, spacing: 16) {
                                     Text("Saved Addresses")
                                         .font(.title2)

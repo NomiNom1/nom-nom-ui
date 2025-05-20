@@ -5,24 +5,62 @@ struct Location: Codable {
     let coordinates: [Double]
 }
 
+struct DropOffOptions: Codable {
+    let handItToMe: Bool
+    let leaveAtDoor: Bool
+}
+
 struct DeliveryAddress: Codable {
-    let location: Location
+    let id: String
+    let label: String
     let street: String
+    let apartment: String?
+    let buildingName: String?
+    let entryCode: String?
     let city: String
     let state: String
     let zipCode: String
+    let country: String
+    let location: Location
+    let dropOffOptions: DropOffOptions
+    let instructions: String?
     let isDefault: Bool
-    let id: String
+    let addressType: String
+    let createdAt: String
+    let updatedAt: String
 
     enum CodingKeys: String, CodingKey {
-        case location
+        case id
+        case label
         case street
+        case apartment
+        case buildingName
+        case entryCode
         case city
         case state
         case zipCode
+        case country
+        case location
+        case dropOffOptions
+        case instructions
         case isDefault
-        case id = "_id"
+        case addressType
+        case createdAt
+        case updatedAt
     }
+}
+
+struct ProfilePhoto: Codable {
+    let url: String
+    let thumbnailUrl: String?
+}
+
+struct PaymentMethod: Codable {
+    let type: String
+    let cardNumber: String
+    let expiryDate: String
+    let cardHolderName: String
+    let isDefault: Bool
 }
 
 struct User: Codable {
@@ -32,9 +70,10 @@ struct User: Codable {
     let email: String
     let phone: String
     let countryCode: String
+    let profilePhoto: ProfilePhoto?
+    let addresses: [DeliveryAddress]
+    let paymentMethods: [PaymentMethod]
     let orderHistory: [String]
-    let deliveryAddresses: [DeliveryAddress]
-    let paymentMethods: [String]
     let createdAt: String
     let updatedAt: String
     
@@ -45,9 +84,10 @@ struct User: Codable {
         case email
         case phone
         case countryCode
-        case orderHistory
-        case deliveryAddresses
+        case profilePhoto
+        case addresses
         case paymentMethods
+        case orderHistory
         case createdAt
         case updatedAt
     }
