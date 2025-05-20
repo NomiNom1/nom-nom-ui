@@ -2,31 +2,47 @@ import SwiftUI
 import Combine
 
 struct ChatListView: View {
+    @StateObject private var coordinator = ChatCoordinator()
     @StateObject private var viewModel = ChatListViewModel()
     @EnvironmentObject private var userSessionManager: UserSessionManager
+    @EnvironmentObject private var themeManager: ThemeManager
+    @EnvironmentObject private var languageManager: LanguageManager
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(viewModel.chats) { chat in
-                    NavigationLink(destination: ChatDetailView(chat: chat)) {
-                        ChatRowView(chat: chat)
+        NavigationStack(path: $coordinator.path) {
+            VStack(spacing: 0) {
+                Text("Chat List View")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(themeManager.currentTheme.textPrimary)
+                    .padding(.horizontal)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                List {
+                    ForEach(viewModel.chats) { chat in
+                        NavigationLink(destination: ChatDetailView(chat: chat)) {
+                            ChatRowView(chat: chat)
+                        }
                     }
                 }
-            }
-            .navigationTitle("Messages")
-            .listStyle(PlainListStyle())
-            .refreshable {
-                await viewModel.refreshChats()
-            }
-            .task {
-                if let userId = userSessionManager.currentUser?.id {
-                    await viewModel.connect(userId: userId)
+                .background(themeManager.currentTheme.background)
+                .listStyle(PlainListStyle())
+                .refreshable {
+                    await viewModel.refreshChats()
                 }
+                .task {
+                    if let userId = userSessionManager.currentUser?.id {
+                        await viewModel.connect(userId: userId)
+                    }
+                }
+                .onDisappear {
+                    viewModel.disconnect()
+                }
+                .navigationBarHidden(true)
             }
-            .onDisappear {
-                viewModel.disconnect()
-            }
+            
+            
+            
         }
     }
 }
@@ -160,16 +176,16 @@ class ChatListViewModel: ObservableObject {
             message.senderId == UserSessionManager.shared.currentUser?.id ? message.receiverId : message.senderId
         }
         
-//        // Create chat objects
-//        chats = groupedMessages.map { participantId, messages in
-//            Chat(
-//                id: participantId,
-//                participantId: participantId,
-//                participantName: "User \(participantId.prefix(4))", // In a real app, fetch user details
-//                lastMessage: messages.sorted { $0.timestamp > $1.timestamp }.first
-//            )
-//        }
-//        .sorted { $0.lastMessage?.timestamp ?? Date() > $1.lastMessage?.timestamp ?? Date() }
+        //        // Create chat objects
+        //        chats = groupedMessages.map { participantId, messages in
+        //            Chat(
+        //                id: participantId,
+        //                participantId: participantId,
+        //                participantName: "User \(participantId.prefix(4))", // In a real app, fetch user details
+        //                lastMessage: messages.sorted { $0.timestamp > $1.timestamp }.first
+        //            )
+        //        }
+        //        .sorted { $0.lastMessage?.timestamp ?? Date() > $1.lastMessage?.timestamp ?? Date() }
     }
 }
 
@@ -183,4 +199,6 @@ struct Chat: Identifiable {
 #Preview {
     ChatListView()
         .environmentObject(UserSessionManager.shared)
+        .environmentObject(ThemeManager())
+        .environmentObject(LanguageManager.shared)
 } 
