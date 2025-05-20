@@ -120,6 +120,9 @@ final class UserSessionManager: ObservableObject {
                 self.sessionState = .signedIn(user)
                 self.lastRefreshTime = Date()
             }
+
+            // Start background refresh timer
+            startBackgroundRefreshTimer()
         } catch {
             logger.error("Sign in failed: \(error.localizedDescription)")
             await MainActor.run {
@@ -127,6 +130,21 @@ final class UserSessionManager: ObservableObject {
             }
             throw error
         }
+    }
+
+    private func startBackgroundRefreshTimer() {
+        // Cancel any existing timer
+        cancellables.removeAll()
+
+        // Create a timer that fires every refreshInterval
+        Timer.publish(every: refreshInterval, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                Task {
+                    try? await self?.refreshUserData()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     func signOut() async {
