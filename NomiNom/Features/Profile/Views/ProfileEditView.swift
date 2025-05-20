@@ -37,11 +37,6 @@ struct ProfileEditView: View {
                             .font(.title3)
                             .fontWeight(.semibold)
                             .foregroundColor(themeManager.currentTheme.textPrimary)
-                        
-                        ProfileSettingRow(title: "Display Name", value: "John Doe")
-                        ProfileSettingRow(title: "Email", value: "john.doe@example.com")
-                        ProfileSettingRow(title: "Phone", value: "+1 (555) 123-4567")
-                        ProfileSettingRow(title: "Location", value: "New York, NY")
                     }
                     .padding(.top)
                 }
@@ -58,25 +53,6 @@ struct ProfileEditView: View {
                 }
             }
         }
-    }
-}
-
-struct ProfileSettingRow: View {
-    let title: String
-    let value: String
-    @EnvironmentObject private var themeManager: ThemeManager
-    
-    var body: some View {
-        HStack {
-            Text(title)
-                .foregroundColor(themeManager.currentTheme.textPrimary)
-            Spacer()
-            Text(value)
-                .foregroundColor(themeManager.currentTheme.textSecondary)
-        }
-        .padding()
-        .background(themeManager.currentTheme.surface)
-        .cornerRadius(10)
     }
 }
 
