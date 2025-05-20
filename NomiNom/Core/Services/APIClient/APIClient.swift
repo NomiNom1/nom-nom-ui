@@ -45,9 +45,6 @@ final class APIClient: APIClientProtocol {
         do {
             let (data, response) = try await session.data(for: request)
             
-            if let dataString = String(data: data, encoding: .utf8) {
-                print("Received Data: \(dataString)")
-            }
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
             }
@@ -55,10 +52,8 @@ final class APIClient: APIClientProtocol {
             switch httpResponse.statusCode {
             case 200...299:
                 do {
-                    print("decoding data")
                     return try decoder.decode(T.self, from: data)
                 } catch {
-                    print("decoding error: \(error)")
                     throw APIError.decodingError(error)
                 }
             case 401:

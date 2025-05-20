@@ -48,7 +48,6 @@ final class LocationSearchService: LocationSearchServiceProtocol {
                 "Accept": "application/json"
             ]
         )
-        print("calling with endpoint: \(endpoint)")
         
         let response: LocationSearchResponse = try await apiClient.request(endpoint)
         return response.predictions
