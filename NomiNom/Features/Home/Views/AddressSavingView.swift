@@ -1,4 +1,5 @@
 import SwiftUI
+// import MapKit
 
 struct AddressSavingView: View {
     @Environment(\.dismiss) private var dismiss
@@ -34,6 +35,19 @@ struct AddressSavingView: View {
                         // Building Name
                         InputField(title: "Building Name", text: $viewModel.buildingName)
                         
+                        // // Map View
+                        // if let coordinate = viewModel.coordinate {
+                        //     LocationMapView(
+                        //         coordinate: coordinate,
+                        //         title: viewModel.selectedAddress.structuredFormatting.mainText,
+                        //         subtitle: viewModel.selectedAddress.structuredFormatting.secondaryText
+                        //     )
+                        // } else if viewModel.isLoading {
+                        //     ProgressView()
+                        //         .frame(height: 200)
+                        //         .frame(maxWidth: .infinity)
+                        // }
+                        
                         // Drop-off Options
                         InputField(title: "Drop-off Options", text: $viewModel.dropOffOptions)
                         
@@ -53,10 +67,6 @@ struct AddressSavingView: View {
                         InputField(title: "Address Label", text: $viewModel.addressLabel)
                     }
                     .padding(.horizontal)
-
-
-                    Button("Save") {
-                    }
                 }
                 .padding(.vertical)
             }
