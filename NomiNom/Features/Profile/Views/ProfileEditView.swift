@@ -4,9 +4,8 @@ struct ProfileEditView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var themeManager: ThemeManager
     @State private var profileImage: Image = Image(systemName: "person.circle.fill")
-    
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Profile Image Section
