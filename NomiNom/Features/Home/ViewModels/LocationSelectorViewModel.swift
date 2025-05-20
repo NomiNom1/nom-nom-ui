@@ -1,21 +1,66 @@
 import Foundation
 import Combine
+import CoreLocation
 
 @MainActor
 final class LocationSelectorViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults: [LocationPrediction] = []
+    @Published var nearbyLocations: [LocationPrediction] = []
     @Published var isLoading = false
+    @Published var isLoadingNearby = false
     @Published var error: Error?
     @Published var isSearching = false
     
     private let locationSearchService: LocationSearchServiceProtocol
+    private let locationManager: LocationManager
     private var searchTask: Task<Void, Never>?
+    private var nearbyTask: Task<Void, Never>?
     private var cancellables = Set<AnyCancellable>()
     
-    init(locationSearchService: LocationSearchServiceProtocol = LocationSearchService()) {
+    init(
+        locationSearchService: LocationSearchServiceProtocol = LocationSearchService(),
+        locationManager: LocationManager = LocationManager()
+    ) {
         self.locationSearchService = locationSearchService
+        self.locationManager = locationManager
         setupSearchDebounce()
+        setupLocationObserver()
+    }
+    
+    private func setupLocationObserver() {
+        locationManager.$location
+            .compactMap { $0 }
+            .sink { [weak self] location in
+                self?.fetchNearbyLocations(for: location)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func fetchNearbyLocations(for location: CLLocation) {
+        // Cancel any existing nearby task
+        nearbyTask?.cancel()
+        
+        isLoadingNearby = true
+        
+        nearbyTask = Task {
+            do {
+                // Use the current location's address as the search query
+                let query = locationManager.address
+                let results = try await locationSearchService.searchLocations(query: query)
+                if !Task.isCancelled {
+                    nearbyLocations = results
+                }
+            } catch {
+                if !Task.isCancelled {
+                    self.error = error
+                }
+            }
+            
+            if !Task.isCancelled {
+                isLoadingNearby = false
+            }
+        }
     }
     
     private func setupSearchDebounce() {
