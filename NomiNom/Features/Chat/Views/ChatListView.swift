@@ -201,4 +201,4 @@ struct Chat: Identifiable {
         .environmentObject(UserSessionManager.shared)
         .environmentObject(ThemeManager())
         .environmentObject(LanguageManager.shared)
-} 
+}

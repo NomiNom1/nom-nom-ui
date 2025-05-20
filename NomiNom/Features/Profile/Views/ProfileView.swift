@@ -3,12 +3,13 @@ import SwiftUI
 struct ProfileView: View {
     // MARK: - Properties
     @State private var profileImage: Image = Image(systemName: "person.circle.fill")
+    @StateObject private var coordinator = ProfileCoordinator()
     @State private var memberSince = "May 20"
     @EnvironmentObject private var userSessionManager: UserSessionManager
     
     // MARK: - Body
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $coordinator.path) {
             ScrollView {
                 VStack(spacing: 8) {
                     // Top Bar with Profile Picture and Icons
@@ -84,7 +85,6 @@ struct ProfileView: View {
                     Spacer()
                 }
             }
-            .navigationTitle("Me")
             .navigationBarHidden(true)
             .task {
                 if !userSessionManager.isSignedIn {
