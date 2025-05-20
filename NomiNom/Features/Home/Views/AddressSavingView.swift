@@ -36,6 +36,11 @@ struct AddressSavingView: View {
                         InputField(title: "Building Name", text: $viewModel.buildingName)
                         
                         // Map View
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Where is the location entrance?")
+                                .font(.headline)
+                        }
+                        .padding(.horizontal)
                         if let coordinate = viewModel.coordinate {
                             LocationMapView(
                                 coordinate: coordinate,
