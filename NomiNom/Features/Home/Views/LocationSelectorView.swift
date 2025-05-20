@@ -6,6 +6,8 @@ struct LocationSelectorView: View {
     @StateObject private var locationManager = LocationManager()
     @StateObject private var userSessionManager = UserSessionManager.shared
     @StateObject private var viewModel = LocationSelectorViewModel()
+    @StateObject private var coordinator = HomeCoordinator()
+    @State private var selectedAddressType: String?
     
     var body: some View {
         NavigationView {
@@ -26,7 +28,7 @@ struct LocationSelectorView: View {
                     
                     Spacer()
                     
-                    Text("Address")
+                    Text(selectedAddressType.map { "Choose \($0) Address" } ?? "Address")
                         .font(.headline)
                     
                     Spacer()
@@ -70,7 +72,9 @@ struct LocationSelectorView: View {
                             LazyVStack(alignment: .leading, spacing: 16) {
                                 ForEach(viewModel.searchResults) { prediction in
                                     Button(action: {
-                                        // TODO: Handle location selection
+                                        if let addressType = selectedAddressType {
+                                            coordinator.showAddressSaving(for: prediction, type: addressType)
+                                        }
                                     }) {
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(prediction.structuredFormatting.mainText)
@@ -94,41 +98,50 @@ struct LocationSelectorView: View {
                             // Home and Work Tiles
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack() {
-                                    VStack(alignment: .leading) {
-                                        HStack() {
-                                            Image(systemName: "house.fill")
-                                                .font(.system(size: 20))
-                                                .foregroundColor(.blue)
-                                            VStack(alignment: .leading) {
-                                                Text("Home")
-                                                    .font(.headline)
-                                                Text("Set Address")
-                                                    .font(.subheadline)
-                                                    .foregroundColor(.gray)
+                                    Button(action: {
+                                        selectedAddressType = "Home"
+                                        viewModel.isSearching = true
+                                    }) {
+                                        VStack(alignment: .leading) {
+                                            HStack() {
+                                                Image(systemName: "house.fill")
+                                                    .font(.system(size: 20))
+                                                    .foregroundColor(.blue)
+                                                VStack(alignment: .leading) {
+                                                    Text("Home")
+                                                        .font(.headline)
+                                                    Text("Set Address")
+                                                        .font(.subheadline)
+                                                        .foregroundColor(.gray)
+                                                }
                                             }
                                         }
-                                        
                                     }
+                                    
                                     // Divider
                                     Rectangle()
                                         .fill(Color(.systemGray4))
                                         .frame(width: 1, height: 30)
                                         .padding(.leading, 20)
                                     
-                                    VStack(alignment: .leading) {
-                                        HStack() {
-                                            Image(systemName: "briefcase.fill")
-                                                .font(.system(size: 20))
-                                                .foregroundColor(.blue)
-                                            VStack(alignment: .leading) {
-                                                Text("Work")
-                                                    .font(.headline)
-                                                Text("Set Address")
-                                                    .font(.subheadline)
-                                                    .foregroundColor(.gray)
+                                    Button(action: {
+                                        selectedAddressType = "Work"
+                                        viewModel.isSearching = true
+                                    }) {
+                                        VStack(alignment: .leading) {
+                                            HStack() {
+                                                Image(systemName: "briefcase.fill")
+                                                    .font(.system(size: 20))
+                                                    .foregroundColor(.blue)
+                                                VStack(alignment: .leading) {
+                                                    Text("Work")
+                                                        .font(.headline)
+                                                    Text("Set Address")
+                                                        .font(.subheadline)
+                                                        .foregroundColor(.gray)
+                                                }
                                             }
                                         }
-                                        
                                     }
                                 }
                             }
@@ -188,6 +201,12 @@ struct LocationSelectorView: View {
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackgroundInteraction(.enabled)
+        .sheet(isPresented: $coordinator.showAddressSaving) {
+            if let address = coordinator.selectedAddress,
+               let type = coordinator.addressType {
+                AddressSavingView(selectedAddress: address, addressType: type)
+            }
+        }
     }
 }
 
