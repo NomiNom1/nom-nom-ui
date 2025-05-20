@@ -171,6 +171,41 @@ struct LocationSelectorView: View {
                                     Text(locationManager.address)
                                         .font(.body)
                                 }
+                                
+                                // Nearby Locations Section
+                                VStack(alignment: .leading, spacing: 16) {
+                                    Text("Nearby")
+                                        .font(.title2)
+                                        .fontWeight(.bold)
+                                    
+                                    if viewModel.isLoadingNearby {
+                                        ProgressView()
+                                            .frame(maxWidth: .infinity, alignment: .center)
+                                            .padding()
+                                    } else if viewModel.nearbyLocations.isEmpty {
+                                        Text("No nearby locations found")
+                                            .foregroundColor(.gray)
+                                            .padding()
+                                    } else {
+                                        ForEach(viewModel.nearbyLocations) { prediction in
+                                            Button(action: {
+                                                if let addressType = selectedAddressType {
+                                                    coordinator.showAddressSaving(for: prediction, type: addressType)
+                                                }
+                                            }) {
+                                                VStack(alignment: .leading, spacing: 4) {
+                                                    Text(prediction.structuredFormatting.mainText)
+                                                        .font(.body)
+                                                        .foregroundColor(.primary)
+                                                    Text(prediction.structuredFormatting.secondaryText)
+                                                        .font(.subheadline)
+                                                        .foregroundColor(.gray)
+                                                }
+                                                .padding(.vertical, 8)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             
                             // Saved Addresses Section
