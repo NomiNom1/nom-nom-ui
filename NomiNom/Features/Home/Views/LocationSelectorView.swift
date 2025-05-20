@@ -72,6 +72,7 @@ struct LocationSelectorView: View {
                             LazyVStack(alignment: .leading, spacing: 16) {
                                 ForEach(viewModel.searchResults) { prediction in
                                     Button(action: {
+                                        print("Button pressed")
                                         if let addressType = selectedAddressType {
                                             coordinator.showAddressSaving(for: prediction, type: addressType)
                                         }
