@@ -2,7 +2,7 @@ import Foundation
 import OSLog
 import Compression
 
-enum LogLevel: String {
+enum LogLevel: String, Codable {
     case debug
     case info
     case warning

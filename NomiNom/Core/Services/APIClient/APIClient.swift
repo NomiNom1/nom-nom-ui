@@ -60,8 +60,8 @@ final class APIClient: APIClientProtocol {
             metadata: [
                 "method": endpoint.method.rawValue,
                 "path": endpoint.path,
-                "headers": endpoint.headers,
-                "body": endpoint.body as Any
+                "headers": String(describing: endpoint.headers),
+                "body": String(describing: endpoint.body)
             ],
             correlationId: correlationId
         )
@@ -86,9 +86,9 @@ final class APIClient: APIClientProtocol {
                 "Received API response",
                 category: "APIClient",
                 metadata: [
-                    "statusCode": httpResponse.statusCode,
-                    "duration": duration,
-                    "responseSize": data.count
+                    "statusCode": String(httpResponse.statusCode),
+                    "duration": String(duration),
+                    "responseSize": String(data.count)
                 ],
                 correlationId: correlationId
             )
@@ -130,7 +130,7 @@ final class APIClient: APIClientProtocol {
                         "Server error",
                         category: "APIClient",
                         metadata: [
-                            "statusCode": httpResponse.statusCode,
+                            "statusCode": String(httpResponse.statusCode),
                             "error": errorMessage
                         ],
                         correlationId: correlationId
@@ -140,7 +140,7 @@ final class APIClient: APIClientProtocol {
                 logger.error(
                     "Unknown server error",
                     category: "APIClient",
-                    metadata: ["statusCode": httpResponse.statusCode],
+                    metadata: ["statusCode": String(httpResponse.statusCode)],
                     correlationId: correlationId
                 )
                 throw APIError.serverError(httpResponse.statusCode, "Unknown error")
