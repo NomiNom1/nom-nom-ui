@@ -140,14 +140,12 @@ final class LoggingService: LoggingServiceProtocol {
         return Double.random(in: 0...1) <= samplingRate
     }
     
-    private func sanitizeMetadata(_ metadata: [String: Any]) -> [String: Any] {
+    private func sanitizeMetadata(_ metadata: [String: String]) -> [String: String] {
         var sanitized = metadata
         
         for (key, value) in metadata {
             if sensitiveDataKeys.contains(key.lowercased()) {
                 sanitized[key] = "***REDACTED***"
-            } else if let dict = value as? [String: Any] {
-                sanitized[key] = sanitizeMetadata(dict)
             }
         }
         
@@ -157,7 +155,7 @@ final class LoggingService: LoggingServiceProtocol {
 
 // MARK: - Convenience Methods
 extension LoggingService {
-    func debug(_ message: String, category: String, metadata: [String: Any]? = nil, correlationId: String? = nil) {
+    func debug(_ message: String, category: String, metadata: [String: String]? = nil, correlationId: String? = nil) {
         log(
             level: .debug,
             message: message,
@@ -165,7 +163,7 @@ extension LoggingService {
         )
     }
     
-    func info(_ message: String, category: String, metadata: [String: Any]? = nil, correlationId: String? = nil) {
+    func info(_ message: String, category: String, metadata: [String: String]? = nil, correlationId: String? = nil) {
         log(
             level: .info,
             message: message,
@@ -173,7 +171,7 @@ extension LoggingService {
         )
     }
     
-    func warning(_ message: String, category: String, metadata: [String: Any]? = nil, correlationId: String? = nil) {
+    func warning(_ message: String, category: String, metadata: [String: String]? = nil, correlationId: String? = nil) {
         log(
             level: .warning,
             message: message,
@@ -181,7 +179,7 @@ extension LoggingService {
         )
     }
     
-    func error(_ message: String, category: String, metadata: [String: Any]? = nil, correlationId: String? = nil) {
+    func error(_ message: String, category: String, metadata: [String: String]? = nil, correlationId: String? = nil) {
         log(
             level: .error,
             message: message,
@@ -189,7 +187,7 @@ extension LoggingService {
         )
     }
     
-    func critical(_ message: String, category: String, metadata: [String: Any]? = nil, correlationId: String? = nil) {
+    func critical(_ message: String, category: String, metadata: [String: String]? = nil, correlationId: String? = nil) {
         log(
             level: .critical,
             message: message,
