@@ -12,18 +12,38 @@ struct APIEndpoint {
     let method: HTTPMethod
     let headers: [String: String]
     let body: [String: Any]?
-    
+    let category: String
+    let requiresAuth: Bool
     
     init(
         path: String,
         method: HTTPMethod = .get,
         headers: [String: String] = [:],
-        body: [String: Any]? = nil
+        body: [String: Any]? = nil,
+        category: String = "API",
+        requiresAuth: Bool = false
     ) {
         self.path = path
         self.method = method
         self.headers = headers
         self.body = body
+        self.category = category
+        self.requiresAuth = requiresAuth
+    }
+    
+    var logMetadata: [String: Any] {
+        var metadata: [String: Any] = [
+            "path": path,
+            "method": method.rawValue,
+            "category": category,
+            "requiresAuth": requiresAuth
+        ]
+        
+        if let body = body {
+            metadata["body"] = body
+        }
+        
+        return metadata
     }
 }
 
@@ -36,7 +56,9 @@ extension APIEndpoint {
             headers: [
                 "Content-Type": "application/json",
                 "Accept": "application/json"
-            ]
+            ],
+            category: "User",
+            requiresAuth: true
         )
     }
 } 
