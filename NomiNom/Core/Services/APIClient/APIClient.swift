@@ -32,12 +32,14 @@ final class APIClient: APIClientProtocol {
     
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
         let startTime = Date()
+        let correlationId = UUID().uuidString
         
         guard let url = URL(string: baseURL + endpoint.path) else {
             logger.error(
                 "Invalid URL",
                 category: "APIClient",
-                metadata: ["path": endpoint.path]
+                metadata: ["path": endpoint.path],
+                correlationId: correlationId
             )
             throw APIError.invalidURL
         }
@@ -45,6 +47,7 @@ final class APIClient: APIClientProtocol {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.allHTTPHeaderFields = endpoint.headers
+        request.setValue(correlationId, forHTTPHeaderField: "X-Correlation-ID")
         
         if let body = endpoint.body {
             request.httpBody = try? JSONSerialization.data(withJSONObject: body)
@@ -59,7 +62,8 @@ final class APIClient: APIClientProtocol {
                 "path": endpoint.path,
                 "headers": endpoint.headers,
                 "body": endpoint.body as Any
-            ]
+            ],
+            correlationId: correlationId
         )
         
         do {
@@ -71,7 +75,8 @@ final class APIClient: APIClientProtocol {
                 logger.error(
                     "Invalid response type",
                     category: "APIClient",
-                    metadata: ["response": String(describing: response)]
+                    metadata: ["response": String(describing: response)],
+                    correlationId: correlationId
                 )
                 throw APIError.invalidResponse
             }
@@ -84,7 +89,8 @@ final class APIClient: APIClientProtocol {
                     "statusCode": httpResponse.statusCode,
                     "duration": duration,
                     "responseSize": data.count
-                ]
+                ],
+                correlationId: correlationId
             )
             
             switch httpResponse.statusCode {
@@ -94,7 +100,8 @@ final class APIClient: APIClientProtocol {
                     logger.info(
                         "Successfully decoded response",
                         category: "APIClient",
-                        metadata: ["type": String(describing: T.self)]
+                        metadata: ["type": String(describing: T.self)],
+                        correlationId: correlationId
                     )
                     return decodedResponse
                 } catch {
@@ -104,7 +111,8 @@ final class APIClient: APIClientProtocol {
                         metadata: [
                             "error": error.localizedDescription,
                             "type": String(describing: T.self)
-                        ]
+                        ],
+                        correlationId: correlationId
                     )
                     throw APIError.decodingError(error)
                 }
@@ -112,7 +120,8 @@ final class APIClient: APIClientProtocol {
                 logger.warning(
                     "Unauthorized request",
                     category: "APIClient",
-                    metadata: ["path": endpoint.path]
+                    metadata: ["path": endpoint.path],
+                    correlationId: correlationId
                 )
                 throw APIError.unauthorized
             default:
@@ -123,14 +132,16 @@ final class APIClient: APIClientProtocol {
                         metadata: [
                             "statusCode": httpResponse.statusCode,
                             "error": errorMessage
-                        ]
+                        ],
+                        correlationId: correlationId
                     )
                     throw APIError.serverError(httpResponse.statusCode, errorMessage)
                 }
                 logger.error(
                     "Unknown server error",
                     category: "APIClient",
-                    metadata: ["statusCode": httpResponse.statusCode]
+                    metadata: ["statusCode": httpResponse.statusCode],
+                    correlationId: correlationId
                 )
                 throw APIError.serverError(httpResponse.statusCode, "Unknown error")
             }
@@ -140,7 +151,8 @@ final class APIClient: APIClientProtocol {
             logger.error(
                 "Network error",
                 category: "APIClient",
-                metadata: ["error": error.localizedDescription]
+                metadata: ["error": error.localizedDescription],
+                correlationId: correlationId
             )
             throw APIError.networkError(error)
         }
