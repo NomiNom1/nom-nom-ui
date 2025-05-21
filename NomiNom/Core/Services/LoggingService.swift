@@ -16,7 +16,7 @@ struct LogContext: Codable {
     let function: String
     let line: Int
     let timestamp: Date
-    let metadata: [String: Any]?
+    let metadata: [String: String]?
     let correlationId: String?
     
     init(
@@ -24,7 +24,7 @@ struct LogContext: Codable {
         file: String = #file,
         function: String = #function,
         line: Int = #line,
-        metadata: [String: Any]? = nil,
+        metadata: [String: String]? = nil,
         correlationId: String? = nil
     ) {
         self.category = category
