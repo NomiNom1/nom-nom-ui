@@ -61,4 +61,20 @@ extension APIEndpoint {
             requiresAuth: true
         )
     }
-} 
+}
+
+// MARK: - Address Endpoints
+extension APIEndpoint {
+    static func saveAddressFromPlace(userId: String, address: [String: Any]) -> APIEndpoint {
+        APIEndpoint(
+            path: "/addresses/from-places",
+            method: .post,
+            headers: [
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "x-user-id": userId
+            ],
+            body: address
+        )
+    }
+}
