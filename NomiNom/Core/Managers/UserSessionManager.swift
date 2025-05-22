@@ -177,6 +177,7 @@ final class UserSessionManager: ObservableObject {
             print("Refreshing user data, before fetching")
             let updatedUser = try await userService.fetchUser(id: user.id)
             print("Refreshing user data, after fetching")
+            
             if let userData = try? JSONEncoder().encode(updatedUser) {
                 UserDefaults.standard.set(userData, forKey: userCacheKey)
             }

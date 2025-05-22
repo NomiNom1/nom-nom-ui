@@ -22,17 +22,20 @@ final class AddressSavingViewModel: ObservableObject {
     
     private let geocodingService: GeocodingServiceProtocol
     private let addressService: AddressServiceProtocol
+    private let coordinator: HomeCoordinator
     
     init(
         selectedAddress: LocationPrediction,
         addressType: String,
         geocodingService: GeocodingServiceProtocol = GeocodingService(),
-        addressService: AddressServiceProtocol = AddressService()
+        addressService: AddressServiceProtocol = AddressService(),
+        coordinator: HomeCoordinator = HomeCoordinator()
     ) {
         self.selectedAddress = selectedAddress
         self.addressType = addressType
         self.geocodingService = geocodingService
         self.addressService = addressService
+        self.coordinator = coordinator
         // Initialize with default address label
         self.addressLabel = addressType
         
@@ -91,6 +94,9 @@ final class AddressSavingViewModel: ObservableObject {
 
             // Update user session with new address
             try await UserSessionManager.shared.refreshUserData()
+            
+            // Handle successful save through coordinator
+            coordinator.handleAddressSaved()
 
         } catch {
             saveError = error

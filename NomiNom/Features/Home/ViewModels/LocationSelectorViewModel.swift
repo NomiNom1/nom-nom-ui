@@ -28,6 +28,28 @@ final class LocationSelectorViewModel: ObservableObject {
         setupLocationObserver()
     }
     
+    func refreshData() async {
+        // Cancel any existing tasks
+        searchTask?.cancel()
+        nearbyTask?.cancel()
+        
+        // Clear current data
+        searchResults = []
+        nearbyLocations = []
+        
+        // Refresh user data
+        do {
+            try await UserSessionManager.shared.refreshUserData()
+        } catch {
+            self.error = error
+        }
+        
+        // Refresh nearby locations if we have a location
+        if let location = locationManager.location {
+            await fetchNearbyLocations(for: location)
+        }
+    }
+    
     private func setupLocationObserver() {
         locationManager.$location
             .compactMap { $0 }

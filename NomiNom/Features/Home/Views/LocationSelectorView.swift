@@ -243,6 +243,12 @@ struct LocationSelectorView: View {
                 AddressSavingView(selectedAddress: address, addressType: type)
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .addressSaved)) { _ in
+            // Refresh the view model when an address is saved
+            Task {
+                await viewModel.refreshData()
+            }
+        }
     }
 }
 
