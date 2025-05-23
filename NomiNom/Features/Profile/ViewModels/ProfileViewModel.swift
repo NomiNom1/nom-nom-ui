@@ -1,5 +1,7 @@
 import Foundation
 import Combine
+import SwiftUI
+import PhotosUI
 
 final class ProfileViewModel: ObservableObject {
     // MARK: - Published Properties
@@ -7,6 +9,8 @@ final class ProfileViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var error: Error?
     @Published private(set) var memberSince: String = ""
+    @Published var selectedImage: UIImage?
+    @Published var isImagePickerPresented = false
     
     // MARK: - Dependencies
     private let userSessionManager: UserSessionManager
@@ -54,5 +58,14 @@ final class ProfileViewModel: ObservableObject {
     
     func signOut() async {
         await userSessionManager.signOut()
+    }
+    
+    func presentImagePicker() {
+        isImagePickerPresented = true
+    }
+    
+    func handleSelectedImage(_ image: UIImage?) {
+        selectedImage = image
+        // Note: Image processing will be handled later as per user's request
     }
 } 

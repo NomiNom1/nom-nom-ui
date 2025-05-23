@@ -1,10 +1,10 @@
 import SwiftUI
+import PhotosUI
 
 struct ProfileView: View {
     // MARK: - Properties
-    @State private var profileImage: Image = Image(systemName: "person.circle.fill")
+    @StateObject private var viewModel = ProfileViewModel()
     @StateObject private var coordinator = ProfileCoordinator()
-    @State private var memberSince = "May 20"
     @EnvironmentObject private var userSessionManager: UserSessionManager
     
     // MARK: - Body
@@ -16,12 +16,23 @@ struct ProfileView: View {
                     HStack {
                         Spacer()
                         
-                        profileImage
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 40)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                        Button(action: { viewModel.presentImagePicker() }) {
+                            if let selectedImage = viewModel.selectedImage {
+                                Image(uiImage: selectedImage)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                                    .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                            }
+                        }
                         Spacer()
                         
                         HStack(spacing: 20) {
@@ -56,7 +67,7 @@ struct ProfileView: View {
                                 .fontWeight(.bold)
                         }
                         
-                        Text("NomiNom member since \(memberSince)")
+                        Text("NomiNom member since \(viewModel.memberSince)")
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
@@ -86,12 +97,58 @@ struct ProfileView: View {
                 }
             }
             .navigationBarHidden(true)
+            .sheet(isPresented: $viewModel.isImagePickerPresented) {
+                ImagePicker(image: $viewModel.selectedImage)
+            }
             .task {
                 if !userSessionManager.isSignedIn {
                     do {
                         try await userSessionManager.signIn(userId: "6820d662bdc2a39900706b74")
                     } catch {
                         print("Error signing in: \(error)")
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Image Picker
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    @Environment(\.presentationMode) private var presentationMode
+    
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var config = PHPickerConfiguration()
+        config.filter = .images
+        config.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: config)
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            parent.presentationMode.wrappedValue.dismiss()
+            
+            guard let provider = results.first?.itemProvider else { return }
+            
+            if provider.canLoadObject(ofClass: UIImage.self) {
+                provider.loadObject(ofClass: UIImage.self) { image, _ in
+                    DispatchQueue.main.async {
+                        self.parent.image = image as? UIImage
                     }
                 }
             }
