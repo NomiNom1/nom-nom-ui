@@ -8,23 +8,100 @@ protocol ProfileServiceProtocol {
 
 final class ProfileService: ProfileServiceProtocol {
     private let apiClient: APIClientProtocol
+    private let logger = LoggingService.shared
     
     init(apiClient: APIClientProtocol = APIClient.shared) {
         self.apiClient = apiClient
     }
     
     func updateProfilePhoto(_ imageData: Data) async throws -> ProfilePhoto {
-        // TODO: Implement profile photo upload
-        throw NSError(domain: "com.nominom.app", code: 501, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])
+        // Step 1: Get pre-signed URL from API Gateway
+        let fileName = "\(UUID().uuidString).jpg"
+        let endpoint = APIEndpoint(
+            path: "/images/upload",
+            method: .get,
+            headers: ["Content-Type": "application/json"],
+            body: [
+                "fileName": fileName,
+                "contentType": "image/jpeg"
+            ],
+            category: "Profile",
+            requiresAuth: true
+        )
+        
+        let uploadResponse: ImageUploadResponse = try await apiClient.request(endpoint)
+        
+        // Step 2: Upload image to S3 using pre-signed URL
+        var s3Request = URLRequest(url: URL(string: uploadResponse.uploadUrl)!)
+        s3Request.httpMethod = "PUT"
+        s3Request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
+        s3Request.httpBody = imageData
+        
+        let (_, s3Response) = try await URLSession.shared.data(for: s3Request)
+        
+        guard let httpResponse = s3Response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.serverError(500, "Failed to upload image to S3")
+        }
+        
+        // Step 3: Update user profile with new image URL
+        let updateEndpoint = APIEndpoint(
+            path: "/users/\(UserSessionManager.shared.currentUser?.id ?? "")",
+            method: .put,
+            headers: ["Content-Type": "application/json"],
+            body: [
+                "profilePhoto": [
+                    "url": uploadResponse.imageUrl,
+                    "thumbnailUrl": uploadResponse.imageUrl
+                ]
+            ],
+            category: "Profile",
+            requiresAuth: true
+        )
+        
+        let updatedUser: User = try await apiClient.request(updateEndpoint)
+        
+        // Step 4: Return the profile photo information
+        return updatedUser.profilePhoto ?? ProfilePhoto(url: uploadResponse.imageUrl, thumbnailUrl: uploadResponse.imageUrl)
     }
     
     func updateUserProfile(firstName: String, lastName: String, phone: String) async throws -> User {
-        // TODO: Implement profile update
-        throw NSError(domain: "com.nominom.app", code: 501, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])
+        let endpoint = APIEndpoint(
+            path: "/users/\(UserSessionManager.shared.currentUser?.id ?? "")",
+            method: .put,
+            headers: ["Content-Type": "application/json"],
+            body: [
+                "firstName": firstName,
+                "lastName": lastName,
+                "phone": phone
+            ],
+            category: "Profile",
+            requiresAuth: true
+        )
+        
+        return try await apiClient.request(endpoint)
     }
     
     func deleteProfilePhoto() async throws {
-        // TODO: Implement profile photo deletion
-        throw NSError(domain: "com.nominom.app", code: 501, userInfo: [NSLocalizedDescriptionKey: "Not implemented"])
+        print("deleteProfilePhoto")
+        // let endpoint = APIEndpoint(
+        //     path: "/users/\(UserSessionManager.shared.currentUser?.id ?? "")",
+        //     method: .put,
+        //     headers: ["Content-Type": "application/json"],
+        //     body: [
+        //         "profilePhoto": nil
+        //     ],
+        //     category: "Profile",
+        //     requiresAuth: true
+        // )
+        
+        // _ = try await apiClient.request(endpoint)
     }
+}
+
+// MARK: - Supporting Types
+struct ImageUploadResponse: Codable {
+    let uploadUrl: String
+    let imageUrl: String
+    let imageId: String
 } 

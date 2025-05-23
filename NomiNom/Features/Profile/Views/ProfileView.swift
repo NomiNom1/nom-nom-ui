@@ -17,22 +17,45 @@ struct ProfileView: View {
                         Spacer()
                         
                         Button(action: { viewModel.presentImagePicker() }) {
-                            if let selectedImage = viewModel.selectedImage {
-                                Image(uiImage: selectedImage)
-                                    .resizable()
-                                    .scaledToFill()
+                            ZStack {
+                                if let selectedImage = viewModel.selectedImage {
+                                    Image(uiImage: selectedImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                                } else if let profilePhoto = userSessionManager.currentUser?.profilePhoto {
+                                    AsyncImage(url: URL(string: profilePhoto.url)) { image in
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                    } placeholder: {
+                                        ProgressView()
+                                    }
                                     .frame(width: 40, height: 40)
                                     .clipShape(Circle())
                                     .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                            } else {
-                                Image(systemName: "person.circle.fill")
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                                } else {
+                                    Image(systemName: "person.circle.fill")
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
+                                        .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                                }
+                                
+                                if viewModel.isUploadingImage {
+                                    Circle()
+                                        .trim(from: 0, to: viewModel.uploadProgress)
+                                        .stroke(Color.blue, lineWidth: 2)
+                                        .frame(width: 44, height: 44)
+                                        .rotationEffect(.degrees(-90))
+                                }
                             }
                         }
+                        .disabled(viewModel.isUploadingImage)
+                        
                         Spacer()
                         
                         HStack(spacing: 20) {
@@ -99,6 +122,13 @@ struct ProfileView: View {
             .navigationBarHidden(true)
             .sheet(isPresented: $viewModel.isImagePickerPresented) {
                 ImagePicker(image: $viewModel.selectedImage)
+            }
+            .alert("Error", isPresented: .constant(viewModel.error != nil)) {
+                Button("OK") {
+                    viewModel.error = nil
+                }
+            } message: {
+                Text(viewModel.error?.localizedDescription ?? "An unknown error occurred")
             }
             .task {
                 if !userSessionManager.isSignedIn {

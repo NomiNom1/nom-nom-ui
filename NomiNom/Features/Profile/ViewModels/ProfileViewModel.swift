@@ -7,18 +7,25 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published private(set) var user: User?
     @Published private(set) var isLoading = false
-    @Published private(set) var error: Error?
+    @Published var error: Error?
     @Published private(set) var memberSince: String = ""
     @Published var selectedImage: UIImage?
     @Published var isImagePickerPresented = false
+    @Published private(set) var isUploadingImage = false
+    @Published private(set) var uploadProgress: Double = 0
     
     // MARK: - Dependencies
     private let userSessionManager: UserSessionManager
+    private let profileService: ProfileServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
-    init(userSessionManager: UserSessionManager = .shared) {
+    init(
+        userSessionManager: UserSessionManager = .shared,
+        profileService: ProfileServiceProtocol = ProfileService()
+    ) {
         self.userSessionManager = userSessionManager
+        self.profileService = profileService
         setupBindings()
     }
     
@@ -65,7 +72,43 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func handleSelectedImage(_ image: UIImage?) {
+        guard let image = image else { return }
         selectedImage = image
-        // Note: Image processing will be handled later as per user's request
+        
+        Task {
+            await uploadImage(image)
+        }
+    }
+    
+    private func uploadImage(_ image: UIImage) async {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            await MainActor.run {
+                self.error = NSError(domain: "com.nominom.app", code: 400, userInfo: [NSLocalizedDescriptionKey: "Failed to compress image"])
+            }
+            return
+        }
+        
+        await MainActor.run {
+            self.isUploadingImage = true
+            self.uploadProgress = 0
+        }
+        
+        do {
+            let profilePhoto = try await profileService.updateProfilePhoto(imageData)
+            
+            await MainActor.run {
+                self.isUploadingImage = false
+                self.uploadProgress = 1.0
+                // Refresh user data to get updated profile photo
+                Task {
+                    await self.refreshUserData()
+                }
+            }
+        } catch {
+            await MainActor.run {
+                self.isUploadingImage = false
+                self.error = error
+            }
+        }
     }
 } 
