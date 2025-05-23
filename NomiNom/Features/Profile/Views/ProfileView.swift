@@ -51,10 +51,22 @@ struct ProfileView: View {
                                         .stroke(Color.blue, lineWidth: 2)
                                         .frame(width: 44, height: 44)
                                         .rotationEffect(.degrees(-90))
+                                        .overlay(
+                                            ProgressView()
+                                                .scaleEffect(0.7)
+                                        )
                                 }
                             }
                         }
                         .disabled(viewModel.isUploadingImage)
+                        .overlay(
+                            Group {
+                                if viewModel.isUploadingImage {
+                                    Color.black.opacity(0.1)
+                                        .clipShape(Circle())
+                                }
+                            }
+                        )
                         
                         Spacer()
                         
@@ -122,6 +134,12 @@ struct ProfileView: View {
             .navigationBarHidden(true)
             .sheet(isPresented: $viewModel.isImagePickerPresented) {
                 ImagePicker(image: $viewModel.selectedImage)
+                    .onChange(of: viewModel.selectedImage) { newImage in
+                        if let image = newImage {
+                            print("image processing...")
+                            viewModel.handleSelectedImage(image)
+                        }
+                    }
             }
             .alert("Error", isPresented: .constant(viewModel.error != nil)) {
                 Button("OK") {

@@ -19,6 +19,10 @@ final class ProfileViewModel: ObservableObject {
     private let profileService: ProfileServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Constants
+    private let maxImageSize: Int = 5 * 1024 * 1024 // 5MB
+    private let imageCompressionQuality: CGFloat = 0.7
+    
     // MARK: - Initialization
     init(
         userSessionManager: UserSessionManager = .shared,
@@ -52,6 +56,13 @@ final class ProfileViewModel: ObservableObject {
         return formatter.string(from: date)
     }
     
+    private func validateImage(_ image: UIImage) -> Bool {
+        guard let imageData = image.jpegData(compressionQuality: imageCompressionQuality) else {
+            return false
+        }
+        return imageData.count <= maxImageSize
+    }
+    
     // MARK: - Public Methods
     func refreshUserData() async {
         isLoading = true
@@ -73,17 +84,31 @@ final class ProfileViewModel: ObservableObject {
     
     func handleSelectedImage(_ image: UIImage?) {
         guard let image = image else { return }
-        selectedImage = image
         
+        // Validate image size
+        guard validateImage(image) else {
+            self.error = NSError(
+                domain: "com.nominom.app",
+                code: 400,
+                userInfo: [NSLocalizedDescriptionKey: "Image size exceeds 5MB limit. Please choose a smaller image."]
+            )
+            return
+        }
+        
+        selectedImage = image
         Task {
             await uploadImage(image)
         }
     }
     
     private func uploadImage(_ image: UIImage) async {
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+        guard let imageData = image.jpegData(compressionQuality: imageCompressionQuality) else {
             await MainActor.run {
-                self.error = NSError(domain: "com.nominom.app", code: 400, userInfo: [NSLocalizedDescriptionKey: "Failed to compress image"])
+                self.error = NSError(
+                    domain: "com.nominom.app",
+                    code: 400,
+                    userInfo: [NSLocalizedDescriptionKey: "Failed to compress image"]
+                )
             }
             return
         }
