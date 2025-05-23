@@ -89,6 +89,7 @@ final class UserSessionManager: ObservableObject {
         // For now, we'll use the cached user data
         if let userData = UserDefaults.standard.data(forKey: userCacheKey),
            let user = try? JSONDecoder().decode(User.self, from: userData) {
+            self.currentUser = user
             await MainActor.run {
                 self.sessionState = .signedIn(user)
                 self.lastRefreshTime = Date()

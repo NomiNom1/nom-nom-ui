@@ -148,6 +148,22 @@ struct LocationSelectorView: View {
                             }
                             .padding(.top, 16)
                             
+                            Button(action: {
+                                print("--------------------------------")
+                                print("Current User:")
+                                print(userSessionManager.currentUser)
+                                print("--------------------------------")
+                                
+                                print("Session State:")
+                                print(userSessionManager.sessionState)
+                                print("--------------------------------")
+                                print(userSessionManager.sessionState)
+
+                                
+                            }) {
+                                Text("Click Me")
+                            }
+                            
                             // Current location button
                             Button(action: {
                                 locationManager.requestLocationPermission()
@@ -250,6 +266,13 @@ struct LocationSelectorView: View {
             }
         }
     }
+    // private var sessionStateDescription: String {
+    //     switch sessionManager.sessionState {
+    //         case .signedOut: return "Signed Out"
+    //         case .signedIn(let user): return "Signed In (\(user.firstName))"
+    //         case .loading: return "Loading..."
+    //     }
+    // }
 }
 
 #Preview {
