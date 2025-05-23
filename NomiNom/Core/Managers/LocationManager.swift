@@ -6,6 +6,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var location: CLLocation?
     @Published var address: String = ""
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
+    @Published var currentDeliveryAddress: DeliveryAddress?
     
     override init() {
         super.init()
@@ -19,6 +20,33 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func startUpdatingLocation() {
         locationManager.startUpdatingLocation()
+    }
+    
+    func setCurrentAddress(_ deliveryAddress: DeliveryAddress) {
+        self.currentDeliveryAddress = deliveryAddress
+        self.address = formatAddress(from: deliveryAddress)
+        
+        // Create a CLLocation from the coordinates
+        if let coordinates = deliveryAddress.location.coordinates,
+           coordinates.count >= 2 {
+            let latitude = coordinates[1]
+            let longitude = coordinates[0]
+            self.location = CLLocation(latitude: latitude, longitude: longitude)
+        }
+    }
+    
+    private func formatAddress(from deliveryAddress: DeliveryAddress) -> String {
+        var components: [String] = []
+        
+        components.append(deliveryAddress.street)
+        if let apartment = deliveryAddress.apartment {
+            components.append(apartment)
+        }
+        components.append(deliveryAddress.city)
+        components.append(deliveryAddress.state)
+        components.append(deliveryAddress.zipCode)
+        
+        return components.joined(separator: ", ")
     }
     
     // MARK: - CLLocationManagerDelegate
@@ -44,15 +72,18 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let location = locations.last else { return }
         self.location = location
         
-        // Reverse geocode the location to get the address
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
-            guard let self = self,
-                  let placemark = placemarks?.first,
-                  error == nil else { return }
-            
-            DispatchQueue.main.async {
-                self.address = self.formatAddress(from: placemark)
+        // Only update address if we don't have a current delivery address
+        if currentDeliveryAddress == nil {
+            // Reverse geocode the location to get the address
+            let geocoder = CLGeocoder()
+            geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
+                guard let self = self,
+                      let placemark = placemarks?.first,
+                      error == nil else { return }
+                
+                DispatchQueue.main.async {
+                    self.address = self.formatAddress(from: placemark)
+                }
             }
         }
     }

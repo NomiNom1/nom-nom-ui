@@ -8,6 +8,7 @@ struct LocationSelectorView: View {
     @StateObject private var viewModel = LocationSelectorViewModel()
     @StateObject private var coordinator = HomeCoordinator()
     @State private var selectedAddressType: String?
+    @Binding var selectedTab: Int
     
     var body: some View {
         NavigationView {
@@ -102,8 +103,9 @@ struct LocationSelectorView: View {
                                         // Home Address Tile
                                         if let homeAddress = user.addresses.first(where: { $0.addressType == "home" }) {
                                             Button(action: {
-                                                selectedAddressType = "Home"
-                                                viewModel.isSearching = true
+                                                locationManager.setCurrentAddress(homeAddress)
+                                                selectedTab = 0 // Switch to home tab
+                                                dismiss()
                                             }) {
                                                 VStack(alignment: .leading) {
                                                     HStack() {
@@ -152,8 +154,9 @@ struct LocationSelectorView: View {
                                         // Work Address Tile
                                         if let workAddress = user.addresses.first(where: { $0.addressType == "work" }) {
                                             Button(action: {
-                                                selectedAddressType = "Work"
-                                                viewModel.isSearching = true
+                                                locationManager.setCurrentAddress(workAddress)
+                                                selectedTab = 0 // Switch to home tab
+                                                dismiss()
                                             }) {
                                                 VStack(alignment: .leading) {
                                                     HStack() {
@@ -310,5 +313,5 @@ struct LocationSelectorView: View {
 }
 
 #Preview {
-    LocationSelectorView()
+    LocationSelectorView(selectedTab: .constant(0))
 }
