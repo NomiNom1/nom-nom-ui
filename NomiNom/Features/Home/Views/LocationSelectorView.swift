@@ -72,7 +72,6 @@ struct LocationSelectorView: View {
                             LazyVStack(alignment: .leading, spacing: 16) {
                                 ForEach(viewModel.searchResults) { prediction in
                                     Button(action: {
-                                        print("Button pressed")
                                         if let addressType = selectedAddressType {
                                             coordinator.showAddressSaving(for: prediction, type: addressType)
                                         }
@@ -148,22 +147,6 @@ struct LocationSelectorView: View {
                             }
                             .padding(.top, 16)
                             
-                            Button(action: {
-                                print("--------------------------------")
-                                print("Current User:")
-                                print(userSessionManager.currentUser)
-                                print("--------------------------------")
-                                
-                                print("Session State:")
-                                print(userSessionManager.sessionState)
-                                print("--------------------------------")
-                                print(userSessionManager.sessionState)
-
-                                
-                            }) {
-                                Text("Click Me")
-                            }
-                            
                             // Current location button
                             Button(action: {
                                 locationManager.requestLocationPermission()
@@ -224,16 +207,14 @@ struct LocationSelectorView: View {
                                 }
                             }
 
-                            Text("\(userSessionManager.sessionState)")
-                            
                             // Saved Addresses Section
-                            if let savedAddresses = userSessionManager.userAddresses {
+                            if case .signedIn(let user) = userSessionManager.sessionState {
                                 VStack(alignment: .leading, spacing: 16) {
                                     Text("Saved Addresses")
                                         .font(.title2)
                                         .fontWeight(.bold)
                                     
-                                    ForEach(savedAddresses, id: \.id) { address in
+                                    ForEach(user.addresses, id: \.id) { address in
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(address.street)
                                                 .font(.body)
