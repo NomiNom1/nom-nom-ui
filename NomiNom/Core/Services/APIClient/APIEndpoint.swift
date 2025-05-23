@@ -13,7 +13,7 @@ struct APIEndpoint {
     let headers: [String: String]
     let body: [String: Any]?
     let category: String
-    let requiresAuth: Bool
+    let baseURL: String?
     
     init(
         path: String,
@@ -21,14 +21,14 @@ struct APIEndpoint {
         headers: [String: String] = [:],
         body: [String: Any]? = nil,
         category: String = "API",
-        requiresAuth: Bool = false
+        baseURL: String? = nil
     ) {
         self.path = path
         self.method = method
         self.headers = headers
         self.body = body
         self.category = category
-        self.requiresAuth = requiresAuth
+        self.baseURL = baseURL
     }
     
     var logMetadata: [String: Any] {
@@ -36,11 +36,14 @@ struct APIEndpoint {
             "path": path,
             "method": method.rawValue,
             "category": category,
-            "requiresAuth": requiresAuth
         ]
         
         if let body = body {
             metadata["body"] = body
+        }
+        
+        if let baseURL = baseURL {
+            metadata["baseURL"] = baseURL
         }
         
         return metadata
@@ -58,7 +61,6 @@ extension APIEndpoint {
                 "Accept": "application/json"
             ],
             category: "User",
-            requiresAuth: true
         )
     }
 }

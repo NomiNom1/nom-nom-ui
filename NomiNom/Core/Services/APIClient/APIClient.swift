@@ -33,6 +33,7 @@ final class APIClient: APIClientProtocol {
     func request<T: Decodable>(_ endpoint: APIEndpoint) async throws -> T {
         let startTime = Date()
         
+        let baseURL = endpoint.baseURL ?? self.baseURL
         guard let url = URL(string: baseURL + endpoint.path) else {
             logger.error(
                 "Invalid URL",

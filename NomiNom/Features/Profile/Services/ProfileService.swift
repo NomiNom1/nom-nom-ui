@@ -9,6 +9,7 @@ protocol ProfileServiceProtocol {
 final class ProfileService: ProfileServiceProtocol {
     private let apiClient: APIClientProtocol
     private let logger = LoggingService.shared
+    private let apiGatewayBaseURL = "https://jdzrq0u3e6.execute-api.us-east-1.amazonaws.com/test"
     
     init(apiClient: APIClientProtocol = APIClient.shared) {
         self.apiClient = apiClient
@@ -26,7 +27,7 @@ final class ProfileService: ProfileServiceProtocol {
                 "contentType": "image/jpeg"
             ],
             category: "Profile",
-            requiresAuth: true
+            baseURL: apiGatewayBaseURL // Use API Gateway for S3 upload
         )
         
         let uploadResponse: ImageUploadResponse = try await apiClient.request(endpoint)
@@ -44,7 +45,7 @@ final class ProfileService: ProfileServiceProtocol {
             throw APIError.serverError(500, "Failed to upload image to S3")
         }
         
-        // Step 3: Update user profile with new image URL
+        // Step 3: Update user profile with new image URL (using local API)
         let updateEndpoint = APIEndpoint(
             path: "/users/\(UserSessionManager.shared.currentUser?.id ?? "")",
             method: .put,
@@ -56,7 +57,6 @@ final class ProfileService: ProfileServiceProtocol {
                 ]
             ],
             category: "Profile",
-            requiresAuth: true
         )
         
         let updatedUser: User = try await apiClient.request(updateEndpoint)
@@ -76,7 +76,6 @@ final class ProfileService: ProfileServiceProtocol {
                 "phone": phone
             ],
             category: "Profile",
-            requiresAuth: true
         )
         
         return try await apiClient.request(endpoint)
@@ -92,10 +91,9 @@ final class ProfileService: ProfileServiceProtocol {
         //         "profilePhoto": nil
         //     ],
         //     category: "Profile",
-        //     requiresAuth: true
         // )
         
-        // _ = try await apiClient.request(endpoint)
+        // _ = try await apiClient.request(endpoint) as User
     }
 }
 
