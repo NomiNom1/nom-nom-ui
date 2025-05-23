@@ -70,6 +70,38 @@ struct AddressSavingView: View {
                         
                         // Address Label
                         InputField(title: "Address Label", text: $viewModel.addressLabel)
+
+                        // Save Button
+                        Button(action: {
+                            Task {
+                                await viewModel.saveAddress()
+                                if viewModel.saveError == nil {
+                                    dismiss()
+                                }
+                            }
+                        }) {
+                            HStack {
+                                if viewModel.isSaving {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                }
+                                Text("Save Address")
+                                    .font(.headline)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(themeManager.currentTheme.buttonPrimary)
+                            .foregroundColor(.white)
+                            .cornerRadius(12)
+                        }
+                        .disabled(viewModel.isSaving)
+
+                        if let error = viewModel.saveError {
+                            Text(error.localizedDescription)
+                                .foregroundColor(themeManager.currentTheme.error)
+                                .font(.subheadline)
+                                .padding(.horizontal)
+                        }
                     }
                     .padding(.horizontal)
                 }

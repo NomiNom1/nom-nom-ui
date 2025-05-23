@@ -89,6 +89,7 @@ final class UserSessionManager: ObservableObject {
         // For now, we'll use the cached user data
         if let userData = UserDefaults.standard.data(forKey: userCacheKey),
            let user = try? JSONDecoder().decode(User.self, from: userData) {
+            self.currentUser = user
             await MainActor.run {
                 self.sessionState = .signedIn(user)
                 self.lastRefreshTime = Date()
@@ -165,15 +166,19 @@ final class UserSessionManager: ObservableObject {
     }
     
     func refreshUserData() async throws {
+        print("Calling Refreshing user data")
         guard case .signedIn(let user) = sessionState else { return }
         
-        if let lastRefresh = lastRefreshTime,
-           Date().timeIntervalSince(lastRefresh) < refreshInterval {
-            return // Use cached data if within refresh interval
-        }
+        // if let lastRefresh = lastRefreshTime,
+        //    Date().timeIntervalSince(lastRefresh) < refreshInterval {
+        //     return // Use cached data if within refresh interval
+        // }
         
         do {
+            print("Refreshing user data, before fetching")
             let updatedUser = try await userService.fetchUser(id: user.id)
+            print("Refreshing user data, after fetching")
+            
             if let userData = try? JSONEncoder().encode(updatedUser) {
                 UserDefaults.standard.set(userData, forKey: userCacheKey)
             }

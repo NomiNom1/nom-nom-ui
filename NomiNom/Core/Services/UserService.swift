@@ -2,7 +2,7 @@ import Foundation
 
 struct Location: Codable {
     let type: String
-    let coordinates: [Double]
+    let coordinates: [Double]?
 }
 
 struct DropOffOptions: Codable {

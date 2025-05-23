@@ -48,6 +48,13 @@ final class LoggingService: LoggingServiceProtocol {
     private let isDebug: Bool
     private let remoteLoggingEnabled: Bool
     private let sensitiveDataKeys: Set<String> = ["password", "token", "secret", "key", "authorization"]
+    private let samplingRates: [LogLevel: Double] = [
+        .debug: 0.1,    // Sample 10% of debug logs
+        .info: 0.3,     // Sample 30% of info logs
+        .warning: 0.5,  // Sample 50% of warning logs
+        .error: 1.0,    // Sample 100% of error logs
+        .critical: 1.0  // Sample 100% of critical logs
+    ]
     
     private init() {
         #if DEBUG

@@ -6,6 +6,7 @@ struct HomeView: View {
     @StateObject private var locationManager = LocationManager()
     @EnvironmentObject private var themeManager: ThemeManager
     @EnvironmentObject private var languageManager: LanguageManager
+    @Binding var selectedTab: Int
     
     var body: some View {
         NavigationStack(path: $coordinator.path) {
@@ -21,7 +22,7 @@ struct HomeView: View {
                                 .foregroundColor(themeManager.currentTheme.primary)
                                 .font(.system(size: 16))
                             
-                            Text(locationManager.address.isEmpty ? "select_location".localized : locationManager.address)
+                            Text(locationManager.currentDeliveryAddress != nil ? "select_location".localized : locationManager.address)
                                 .foregroundColor(themeManager.currentTheme.textPrimary)
                                 .font(.system(size: 16, weight: .medium))
                                 .lineLimit(1)
@@ -75,14 +76,14 @@ struct HomeView: View {
             }
             .navigationBarHidden(true)
             .sheet(isPresented: $coordinator.showLocationSelector) {
-                LocationSelectorView()
+                LocationSelectorView(selectedTab: $selectedTab)
             }
         }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(selectedTab: .constant(0))
         .environmentObject(ThemeManager())
         .environmentObject(LanguageManager.shared)
 } 

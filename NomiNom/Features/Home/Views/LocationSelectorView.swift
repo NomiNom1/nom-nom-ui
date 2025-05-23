@@ -4,10 +4,11 @@ import CoreLocation
 struct LocationSelectorView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var locationManager = LocationManager()
-    @StateObject private var userSessionManager = UserSessionManager.shared
+    @ObservedObject private var userSessionManager = UserSessionManager.shared
     @StateObject private var viewModel = LocationSelectorViewModel()
     @StateObject private var coordinator = HomeCoordinator()
     @State private var selectedAddressType: String?
+    @Binding var selectedTab: Int
     
     var body: some View {
         NavigationView {
@@ -72,7 +73,6 @@ struct LocationSelectorView: View {
                             LazyVStack(alignment: .leading, spacing: 16) {
                                 ForEach(viewModel.searchResults) { prediction in
                                     Button(action: {
-                                        print("Button pressed")
                                         if let addressType = selectedAddressType {
                                             coordinator.showAddressSaving(for: prediction, type: addressType)
                                         }
@@ -99,47 +99,99 @@ struct LocationSelectorView: View {
                             // Home and Work Tiles
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack() {
-                                    Button(action: {
-                                        selectedAddressType = "Home"
-                                        viewModel.isSearching = true
-                                    }) {
-                                        VStack(alignment: .leading) {
-                                            HStack() {
-                                                Image(systemName: "house.fill")
-                                                    .font(.system(size: 20))
-                                                    .foregroundColor(.blue)
+                                    if case .signedIn(let user) = userSessionManager.sessionState {
+                                        // Home Address Tile
+                                        if let homeAddress = user.addresses.first(where: { $0.addressType == "home" }) {
+                                            Button(action: {
+                                                locationManager.setCurrentAddress(homeAddress)
+                                                selectedTab = 0 // Switch to home tab
+                                                dismiss()
+                                            }) {
                                                 VStack(alignment: .leading) {
-                                                    Text("Home")
-                                                        .font(.headline)
-                                                    Text("Set Address")
-                                                        .font(.subheadline)
-                                                        .foregroundColor(.gray)
+                                                    HStack() {
+                                                        Image(systemName: "house.fill")
+                                                            .font(.system(size: 20))
+                                                            .foregroundColor(.blue)
+                                                        VStack(alignment: .leading) {
+                                                            Text("Home")
+                                                                .font(.headline)
+                                                            Text(formatStreetAddress(homeAddress.street))
+                                                                .font(.subheadline)
+                                                                .foregroundColor(.gray)
+                                                                .lineLimit(1)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            Button(action: {
+                                                selectedAddressType = "Home"
+                                                viewModel.isSearching = true
+                                            }) {
+                                                VStack(alignment: .leading) {
+                                                    HStack() {
+                                                        Image(systemName: "house.fill")
+                                                            .font(.system(size: 20))
+                                                            .foregroundColor(.blue)
+                                                        VStack(alignment: .leading) {
+                                                            Text("Home")
+                                                                .font(.headline)
+                                                            Text("Set Address")
+                                                                .font(.subheadline)
+                                                                .foregroundColor(.gray)
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                    
-                                    // Divider
-                                    Rectangle()
-                                        .fill(Color(.systemGray4))
-                                        .frame(width: 1, height: 30)
-                                        .padding(.leading, 20)
-                                    
-                                    Button(action: {
-                                        selectedAddressType = "Work"
-                                        viewModel.isSearching = true
-                                    }) {
-                                        VStack(alignment: .leading) {
-                                            HStack() {
-                                                Image(systemName: "briefcase.fill")
-                                                    .font(.system(size: 20))
-                                                    .foregroundColor(.blue)
+                                        
+                                        // Divider
+                                        Rectangle()
+                                            .fill(Color(.systemGray4))
+                                            .frame(width: 1, height: 30)
+                                            .padding(.leading, 20)
+                                        
+                                        // Work Address Tile
+                                        if let workAddress = user.addresses.first(where: { $0.addressType == "work" }) {
+                                            Button(action: {
+                                                locationManager.setCurrentAddress(workAddress)
+                                                selectedTab = 0 // Switch to home tab
+                                                dismiss()
+                                            }) {
                                                 VStack(alignment: .leading) {
-                                                    Text("Work")
-                                                        .font(.headline)
-                                                    Text("Set Address")
-                                                        .font(.subheadline)
-                                                        .foregroundColor(.gray)
+                                                    HStack() {
+                                                        Image(systemName: "briefcase.fill")
+                                                            .font(.system(size: 20))
+                                                            .foregroundColor(.blue)
+                                                        VStack(alignment: .leading) {
+                                                            Text("Work")
+                                                                .font(.headline)
+                                                            Text(formatStreetAddress(workAddress.street))
+                                                                .font(.subheadline)
+                                                                .foregroundColor(.gray)
+                                                                .lineLimit(1)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            Button(action: {
+                                                selectedAddressType = "Work"
+                                                viewModel.isSearching = true
+                                            }) {
+                                                VStack(alignment: .leading) {
+                                                    HStack() {
+                                                        Image(systemName: "briefcase.fill")
+                                                            .font(.system(size: 20))
+                                                            .foregroundColor(.blue)
+                                                        VStack(alignment: .leading) {
+                                                            Text("Work")
+                                                                .font(.headline)
+                                                            Text("Set Address")
+                                                                .font(.subheadline)
+                                                                .foregroundColor(.gray)
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -207,15 +259,15 @@ struct LocationSelectorView: View {
                                     }
                                 }
                             }
-                            
+
                             // Saved Addresses Section
-                            if let savedAddresses = userSessionManager.userAddresses {
+                            if case .signedIn(let user) = userSessionManager.sessionState {
                                 VStack(alignment: .leading, spacing: 16) {
                                     Text("Saved Addresses")
                                         .font(.title2)
                                         .fontWeight(.bold)
                                     
-                                    ForEach(savedAddresses, id: \.id) { address in
+                                    ForEach(user.addresses, id: \.id) { address in
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text(address.street)
                                                 .font(.body)
@@ -243,9 +295,23 @@ struct LocationSelectorView: View {
                 AddressSavingView(selectedAddress: address, addressType: type)
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .addressSaved)) { _ in
+            // Refresh the view model when an address is saved
+            Task {
+                await viewModel.refreshData()
+            }
+        }
+    }
+    
+    // Helper function to format street address
+    private func formatStreetAddress(_ address: String) -> String {
+        if address.count > 13 {
+            return address.prefix(13) + "..."
+        }
+        return address
     }
 }
 
 #Preview {
-    LocationSelectorView()
+    LocationSelectorView(selectedTab: .constant(0))
 }
