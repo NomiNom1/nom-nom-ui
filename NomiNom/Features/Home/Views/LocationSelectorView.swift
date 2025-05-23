@@ -4,7 +4,7 @@ import CoreLocation
 struct LocationSelectorView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var locationManager = LocationManager()
-    @StateObject private var userSessionManager = UserSessionManager.shared
+    @ObservedObject private var userSessionManager = UserSessionManager.shared
     @StateObject private var viewModel = LocationSelectorViewModel()
     @StateObject private var coordinator = HomeCoordinator()
     @State private var selectedAddressType: String?
@@ -223,6 +223,8 @@ struct LocationSelectorView: View {
                                     }
                                 }
                             }
+
+                            Text("\(userSessionManager.sessionState)")
                             
                             // Saved Addresses Section
                             if let savedAddresses = userSessionManager.userAddresses {

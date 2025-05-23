@@ -57,7 +57,6 @@ final class AddressSavingViewModel: ObservableObject {
     }
     
     func saveAddress() async {
-        // TODO: Implement address saving logic
         guard let user = UserSessionManager.shared.currentUser else {
             saveError = NSError(domain: "com.nominom.app", code: 401, userInfo: [NSLocalizedDescriptionKey: "User not signed in"])
             return
@@ -97,7 +96,6 @@ final class AddressSavingViewModel: ObservableObject {
             
             // Handle successful save through coordinator
             coordinator.handleAddressSaved()
-
         } catch {
             saveError = error
             print("saveError: \(saveError)")

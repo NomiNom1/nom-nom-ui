@@ -40,6 +40,8 @@ final class LocationSelectorViewModel: ObservableObject {
         // Refresh user data
         do {
             try await UserSessionManager.shared.refreshUserData()
+            // Force a UI update by triggering objectWillChange
+            objectWillChange.send()
         } catch {
             self.error = error
         }
