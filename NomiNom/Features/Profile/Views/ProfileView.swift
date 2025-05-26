@@ -25,18 +25,20 @@ struct ProfileView: View {
                                         .frame(width: 40, height: 40)
                                         .clipShape(Circle())
                                         .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                                } else if let profilePhoto = userSessionManager.currentUser?.profilePhoto {
-                                    AsyncImage(url: URL(string: profilePhoto.url)) { image in
-                                        image
-                                            .resizable()
-                                            .scaledToFill()
-                                    } placeholder: {
-                                        ProgressView()
-                                    }
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
-                                    .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                                } else {
+                                } 
+                                // else if let profilePhoto = userSessionManager.currentUser?.profilePhoto {
+                                //     AsyncImage(url: URL(string: profilePhoto.url)) { image in
+                                //         image
+                                //             .resizable()
+                                //             .scaledToFill()
+                                //     } placeholder: {
+                                //         ProgressView()
+                                //     }
+                                //     .frame(width: 40, height: 40)
+                                //     .clipShape(Circle())
+                                //     .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
+                                // } 
+                                else {
                                     Image(systemName: "person.circle.fill")
                                         .resizable()
                                         .scaledToFill()

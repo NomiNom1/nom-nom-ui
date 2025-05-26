@@ -95,13 +95,18 @@ final class ProfileViewModel: ObservableObject {
             return
         }
         
+        print("Selected image before")
+
         selectedImage = image
+        print("Selected image")
         Task {
+            print("calling uploadImage")
             await uploadImage(image)
         }
     }
     
     private func uploadImage(_ image: UIImage) async {
+        print("uploadImage")
         guard let imageData = image.jpegData(compressionQuality: imageCompressionQuality) else {
             await MainActor.run {
                 self.error = NSError(
@@ -112,6 +117,7 @@ final class ProfileViewModel: ObservableObject {
             }
             return
         }
+        print("setting isUploadingImage to true")
         
         await MainActor.run {
             self.isUploadingImage = true
@@ -119,6 +125,7 @@ final class ProfileViewModel: ObservableObject {
         }
         
         do {
+            print("Uploading image to profile service")
             let profilePhoto = try await profileService.updateProfilePhoto(imageData)
             
             await MainActor.run {
