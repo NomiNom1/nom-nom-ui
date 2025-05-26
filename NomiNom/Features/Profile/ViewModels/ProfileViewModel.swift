@@ -85,8 +85,11 @@ final class ProfileViewModel: ObservableObject {
     func handleSelectedImage(_ image: UIImage?) {
         guard let image = image else { return }
         
+        print("handleSelectedImage: Starting image validation")
+        
         // Validate image size
         guard validateImage(image) else {
+            print("handleSelectedImage: Image validation failed - size exceeds limit")
             self.error = NSError(
                 domain: "com.nominom.app",
                 code: 400,
@@ -95,19 +98,19 @@ final class ProfileViewModel: ObservableObject {
             return
         }
         
-        print("Selected image before")
-
+        print("handleSelectedImage: Image validation passed")
         selectedImage = image
-        print("Selected image")
+        print("handleSelectedImage: Selected image set, starting upload task")
         Task {
-            print("calling uploadImage")
+            print("handleSelectedImage: Starting upload task")
             await uploadImage(image)
         }
     }
     
     private func uploadImage(_ image: UIImage) async {
-        print("uploadImage")
+        print("uploadImage: Starting image upload process")
         guard let imageData = image.jpegData(compressionQuality: imageCompressionQuality) else {
+            print("uploadImage: Failed to compress image")
             await MainActor.run {
                 self.error = NSError(
                     domain: "com.nominom.app",
@@ -117,26 +120,31 @@ final class ProfileViewModel: ObservableObject {
             }
             return
         }
-        print("setting isUploadingImage to true")
+        print("uploadImage: Image compressed successfully")
         
         await MainActor.run {
+            print("uploadImage: Setting upload state")
             self.isUploadingImage = true
             self.uploadProgress = 0
         }
         
         do {
-            print("Uploading image to profile service")
+            print("uploadImage: Calling profileService.updateProfilePhoto")
             let profilePhoto = try await profileService.updateProfilePhoto(imageData)
+            print("uploadImage: Profile photo updated successfully")
             
             await MainActor.run {
+                print("uploadImage: Updating UI state")
                 self.isUploadingImage = false
                 self.uploadProgress = 1.0
                 // Refresh user data to get updated profile photo
                 Task {
+                    print("uploadImage: Starting user data refresh")
                     await self.refreshUserData()
                 }
             }
         } catch {
+            print("uploadImage: Error occurred - \(error.localizedDescription)")
             await MainActor.run {
                 self.isUploadingImage = false
                 self.error = error

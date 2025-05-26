@@ -16,8 +16,11 @@ final class ProfileService: ProfileServiceProtocol {
     }
     
     func updateProfilePhoto(_ imageData: Data) async throws -> ProfilePhoto {
+        print("ProfileService: Starting profile photo update")
         // Step 1: Get pre-signed URL from API Gateway
         let fileName = "\(UUID().uuidString).jpg"
+        print("ProfileService: Generated filename: \(fileName)")
+        
         let endpoint = APIEndpoint(
             path: "/images/upload",
             method: .get,
@@ -30,7 +33,9 @@ final class ProfileService: ProfileServiceProtocol {
             baseURL: apiGatewayBaseURL // Use API Gateway for S3 upload
         )
         
+        print("ProfileService: Requesting pre-signed URL from API Gateway")
         let uploadResponse: ImageUploadResponse = try await apiClient.request(endpoint)
+        print("ProfileService: Received pre-signed URL: \(uploadResponse.uploadUrl)")
         
         // Step 2: Upload image to S3 using pre-signed URL
         var s3Request = URLRequest(url: URL(string: uploadResponse.uploadUrl)!)
@@ -38,12 +43,15 @@ final class ProfileService: ProfileServiceProtocol {
         s3Request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
         s3Request.httpBody = imageData
         
+        print("ProfileService: Uploading image to S3")
         let (_, s3Response) = try await URLSession.shared.data(for: s3Request)
         
         guard let httpResponse = s3Response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
+            print("ProfileService: Failed to upload image to S3")
             throw APIError.serverError(500, "Failed to upload image to S3")
         }
+        print("ProfileService: Successfully uploaded image to S3")
         
         // Step 3: Update user profile with new image URL (using local API)
         let updateEndpoint = APIEndpoint(
@@ -59,7 +67,9 @@ final class ProfileService: ProfileServiceProtocol {
             category: "Profile",
         )
         
+        print("ProfileService: Updating user profile with new image URL")
         let updatedUser: User = try await apiClient.request(updateEndpoint)
+        print("ProfileService: Successfully updated user profile")
         
         // Step 4: Return the profile photo information
         return updatedUser.profilePhoto ?? ProfilePhoto(url: uploadResponse.imageUrl, thumbnailUrl: uploadResponse.imageUrl)
